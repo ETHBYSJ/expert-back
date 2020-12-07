@@ -32,8 +32,10 @@ func Init(connection string, dbName string) {
 	db := client.Database(dbName)
 	DBConn = &Database{DB: db, Client: client, Context: backgroundCtx}
 	// 创建集合
-	// _ = DBConn.DB.CreateCollection(DBConn.Context, "users")
-	// _ = DBConn.DB.CreateCollection(DBConn.Context, "participants")
+	// 单位
+	_ = DBConn.DB.CreateCollection(DBConn.Context, "companies")
+	// 专家推荐信息
+	_ = DBConn.DB.CreateCollection(DBConn.Context, "experts")
 	// 创建索引
 	// CreateIndex("users", "openId")
 }

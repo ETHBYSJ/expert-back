@@ -9,4 +9,6 @@ const (
 	// 具体错误码：文件操作
 	ERROR_FILE_DOWNLOAD_INVALID_TYPE = 20001
 	ERROR_DOWNLOAD = 20002
+	// 具体错误码：专家推荐
+	ERROR_RECOMMEND = 30001
 )
