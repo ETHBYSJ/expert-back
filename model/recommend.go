@@ -50,7 +50,6 @@ func SaveOrUpdateCompanyInfo(recommendCompany *RecommendCompany) (string, error)
 	if err != nil {
 		return "", err
 	}
-	// util.Log().Info("%v %v %v %v", updateRes.UpsertedID, updateRes.UpsertedCount, updateRes.MatchedCount, updateRes.ModifiedCount)
 	if updateRes.UpsertedCount != 0 {
 		objectID := updateRes.UpsertedID.(primitive.ObjectID)
 		return objectID.Hex(), nil

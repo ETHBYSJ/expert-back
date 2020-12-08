@@ -7,9 +7,11 @@ import (
 
 func InitRouter() *gin.Engine {
 	recommendController := controller.RecommendController{}
+	commonController := controller.CommonController{}
 	r := gin.Default()
 	v1 := r.Group("/api/v1")
 	{
+		v1.GET("/cookie", commonController.SetCookie)
 		recommend := v1.Group("/recommend")
 		{
 			// 提交推荐信息

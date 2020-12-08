@@ -28,8 +28,8 @@ func (service *RecommendService) RecommendCommit(c *gin.Context, recommendVO *vo
 			response.CODE: e.ERROR_RECOMMEND,
 		})
 	}
-	// 清空原有的专家列表
-	_ = model.ClearExpertsByCompanyID(companyID)
+	// 按照现在的需求，一旦提交专家推荐信息不能修改
+	// _ = model.ClearExpertsByCompanyID(companyID)
 	list := recommendVO.List
 	experts := make([]interface{}, len(list))
 	// 保存专家信息
