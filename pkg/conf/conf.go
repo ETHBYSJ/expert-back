@@ -6,11 +6,12 @@ import (
 	"io/ioutil"
 )
 
+/*
 type DownloadFileInfo struct {
 	Path string
 	Name string
 }
-
+*/
 type SystemConf struct {
 	System struct {
 		Listen string
@@ -18,7 +19,13 @@ type SystemConf struct {
 	File struct {
 		Download struct {
 			Recommend struct {
-				DownloadFileInfo	`yaml:"info"`
+				Path string
+				Name string
+			}
+		}
+		Upload struct {
+			Recommend struct {
+				Path string
 			}
 		}
 	}

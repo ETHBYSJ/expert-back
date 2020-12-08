@@ -29,3 +29,13 @@ type RecommendVO struct {
 	RecommendCompanyVO			`json:"company"`
 	List []RecommendExpertVO	`json:"list"`
 }
+
+// 上传推荐申请表
+type RecommendUploadVO struct {
+	UserID 	string		`form:"id"`
+}
+
+// 解析后的结果
+type RecommendParseVO struct {
+	List 	[]RecommendExpertVO	`json:"list"`
+}

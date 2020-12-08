@@ -6,20 +6,17 @@ import (
 )
 
 func InitRouter() *gin.Engine {
-	fileController := controller.FileController{}
 	recommendController := controller.RecommendController{}
 	r := gin.Default()
 	v1 := r.Group("/api/v1")
 	{
-		file := v1.Group("/file")
-		{
-			// 下载文件
-			file.GET("/download", fileController.DownloadFile)
-		}
 		recommend := v1.Group("/recommend")
 		{
 			// 提交推荐信息
-			recommend.POST("/commit", recommendController.Recommend)
+			recommend.GET("/download", recommendController.RecommendDownload)
+			recommend.POST("/commit", recommendController.RecommendCommit)
+			recommend.POST("/upload", recommendController.RecommendUpload)
+			// recommend.GET("/testParse", recommendController.TestParse)
 		}
 	}
 

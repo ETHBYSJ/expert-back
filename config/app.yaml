@@ -4,8 +4,11 @@ file:
   download:
     recommend:
       info:
-        path: ./static/download/recommend.doc
-        name: 长三角区域教育评价变革协作联盟专家库成员推荐汇总表.doc
+        path: ./static/download/recommend.docx
+        name: 长三角区域教育评价变革协作联盟专家库成员推荐汇总表.docx
+  upload:
+    recommend:
+      path: ./static/upload/recommend
 database:
   name: expert
   connection: mongodb://202.120.39.3:27017

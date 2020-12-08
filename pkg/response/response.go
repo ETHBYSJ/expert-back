@@ -33,12 +33,12 @@ func BuildResponse(m map[int]interface{}) Response {
 	if _, ok := m[DATA]; ok {
 		return Response{
 			Code: code,
+			Data: m[DATA],
 			Msg: msg,
 		}
 	} else {
 		return Response{
 			Code: code,
-			Data: m[DATA],
 			Msg: msg,
 		}
 	}

@@ -7,10 +7,11 @@ var MsgMap = map[int]string{
 	SUCCESS: "成功",
 	ERROR: "失败",
 	// 具体错误码：文件操作
-	ERROR_FILE_DOWNLOAD_INVALID_TYPE: "下载文件类型错误",
 	ERROR_DOWNLOAD: "下载失败",
+	ERROR_UPLOAD: "上传失败",
 	// 具体错误码：专家推荐
 	ERROR_RECOMMEND: "提交推荐信息错误",
+	ERROR_PARSE: "解析推荐表失败",
 }
 
 // 获得返回码对应的错误信息

@@ -4,45 +4,41 @@ import (
 	"expert-back/pkg/conf"
 	"expert-back/pkg/e"
 	"expert-back/pkg/response"
-	"expert-back/vo"
 	"github.com/gin-gonic/gin"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"time"
 )
 
-type DownloadType int
-
-const (
-	Recommend	DownloadType = 0
-)
-
-
-// 存放映射关系
-var downloadMap map[DownloadType]conf.DownloadFileInfo
 
 // 文件相关
 type FileService struct {
 
 }
 
-// 注意初始化顺序
-func InitDownloadMap() {
-	downloadMap = map[DownloadType]conf.DownloadFileInfo{
-		0: conf.SystemConfig.File.Download.Recommend.DownloadFileInfo,
+// 保存上传的文件
+func SaveUploadedFile(file *multipart.FileHeader, dst string) error {
+	src, err := file.Open()
+	if err != nil {
+		return err
 	}
+	defer src.Close()
+	out, err := os.Create(dst)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+	_, err = io.Copy(out, src)
+	return err
 }
 
 // 下载文件
-func (service *FileService) DownloadFile(c *gin.Context, downloadFileVO *vo.DownloadFileVO) response.Response {
-	downloadType := DownloadType(downloadFileVO.Type)
-	if _, ok := downloadMap[downloadType]; !ok {
-		return response.BuildResponse(map[int]interface{}{
-			response.CODE: e.ERROR_FILE_DOWNLOAD_INVALID_TYPE,
-		})
-	}
-	file, err := os.Open(downloadMap[downloadType].Path)
+func (service *FileService) DownloadFile(c *gin.Context, path string, name string) response.Response {
+	file, err := os.Open(path)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.CODE: e.ERROR_DOWNLOAD,
@@ -50,15 +46,30 @@ func (service *FileService) DownloadFile(c *gin.Context, downloadFileVO *vo.Down
 	}
 	defer file.Close()
 	// 设置头
-	c.Header("Content-Disposition", "attachment; filename=" + url.QueryEscape(downloadMap[downloadType].Name))
+	c.Header("Content-Disposition", "attachment; filename=" + url.QueryEscape(name))
 	c.Header("Content-Type", "application/octet-stream")
-	http.ServeContent(c.Writer, c.Request, downloadMap[downloadType].Name, time.Now(), file)
+	http.ServeContent(c.Writer, c.Request, name, time.Now(), file)
 	return response.BuildResponse(map[int]interface{}{})
 }
 
 // 上传文件
-/*
-func (service *FileService) UploadFile(c *gin.Context) response.Response {
-
+func (service *FileService) UploadFile(c *gin.Context, userID string) response.Response {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.CODE: e.ERROR_UPLOAD,
+		})
+	}
+	path := conf.SystemConfig.File.Upload.Recommend.Path
+	fileName := userID + "_" + file.Filename
+	fullPath := filepath.Join(path, fileName)
+	err = SaveUploadedFile(file, fullPath)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.CODE: e.ERROR_UPLOAD,
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.DATA: fullPath,
+	})
 }
-*/
