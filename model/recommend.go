@@ -3,6 +3,7 @@ package model
 
 import (
 	"expert-back/db"
+	"expert-back/util"
 	"expert-back/vo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,14 +24,48 @@ type RecommendExpert struct {
 }
 
 // 根据用户id获得单位信息
-func GetCompanyByUserID(userID string) *RecommendCompany {
+func GetCompanyByUserID(userID string) (*RecommendCompany, error) {
 	var recommendCompany RecommendCompany
 	if err := db.DBConn.DB.Collection("companies").
 		FindOne(db.DBConn.Context, bson.D{{"userID", userID}}).
 		Decode(&recommendCompany); err != nil {
-			return nil
+			return nil, err
 	}
-	return &recommendCompany
+	return &recommendCompany, nil
+}
+
+// 根据单位id获得专家信息
+func GetExpertsByCompanyID(companyID string) ([]*RecommendExpert, error) {
+	experts := []*RecommendExpert{}
+	cursor, err := db.DBConn.DB.Collection("experts").Find(db.DBConn.Context, bson.D{{Key: "companyID", Value: companyID}})
+	if err != nil {
+		return experts, err
+	}
+	defer cursor.Close(db.DBConn.Context)
+	for cursor.Next(db.DBConn.Context) {
+		expert := RecommendExpert{}
+		if err := cursor.Decode(&expert); err != nil {
+			util.Log().Info("err = %v", err)
+			return experts, err
+		}
+		experts = append(experts, &expert)
+	}
+	return experts, nil
+}
+
+// 根据用户id获得专家信息
+func GetExpertsByUserID(userID string) ([]*RecommendExpert, error) {
+	company, err := GetCompanyByUserID(userID)
+	if err != nil {
+		// util.Log().Info("err1 = %v", err)
+		return []*RecommendExpert{}, nil
+	}
+	experts, err := GetExpertsByCompanyID(company.CompanyID.Hex())
+	if err != nil {
+		// util.Log().Info("err2 = %v", err)
+		return []*RecommendExpert{}, err
+	}
+	return experts, nil
 }
 
 // 清空某单位对应的专家列表
@@ -54,9 +89,9 @@ func SaveOrUpdateCompanyInfo(recommendCompany *RecommendCompany) (string, error)
 		objectID := updateRes.UpsertedID.(primitive.ObjectID)
 		return objectID.Hex(), nil
 	}
-	oldCompany := GetCompanyByUserID(recommendCompany.UserID)
-	if oldCompany == nil {
-		return "", nil
+	oldCompany, err := GetCompanyByUserID(recommendCompany.UserID)
+	if err != nil {
+		return "", err
 	}
 	return oldCompany.CompanyID.Hex(), nil
 }

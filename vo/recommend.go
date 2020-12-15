@@ -30,8 +30,7 @@ type RecommendVO struct {
 	List []RecommendExpertVO	`json:"list"`
 }
 
-// 上传推荐申请表
-type RecommendUploadVO struct {
+type RecommendIDVO struct {
 	UserID 	string		`form:"id"`
 }
 

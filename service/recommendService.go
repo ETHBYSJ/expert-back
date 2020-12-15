@@ -7,7 +7,6 @@ import (
 	"expert-back/pkg/docx"
 	"expert-back/pkg/e"
 	"expert-back/pkg/response"
-	"expert-back/util"
 	"expert-back/vo"
 	"github.com/gin-gonic/gin"
 	"github.com/unidoc/unioffice/document"
@@ -16,6 +15,20 @@ import (
 
 type RecommendService struct {
 	fileService FileService
+}
+
+// 获得用户上传的专家信息
+func (service *RecommendService) RecommendGet(c *gin.Context, recommendIDVO *vo.RecommendIDVO) response.Response {
+	experts, err := model.GetExpertsByUserID(recommendIDVO.UserID)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.CODE: e.ERROR_GET,
+			response.DATA: experts,
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.DATA: experts,
+	})
 }
 
 // 提交专家推荐信息
@@ -51,8 +64,8 @@ func (service *RecommendService) RecommendDownload(c *gin.Context) response.Resp
 }
 
 // 上传推荐表
-func (service *RecommendService) RecommendUpload(c *gin.Context, recommendUploadVO *vo.RecommendUploadVO) response.Response {
-	userID := recommendUploadVO.UserID
+func (service *RecommendService) RecommendUpload(c *gin.Context, recommendIDVO *vo.RecommendIDVO) response.Response {
+	userID := recommendIDVO.UserID
 	res := service.fileService.UploadFile(c, userID)
 	if res.Code != e.SUCCESS {
 		return res
@@ -66,19 +79,18 @@ func (service *RecommendService) RecommendUpload(c *gin.Context, recommendUpload
 		})
 	}
 	expertList := ConstructExpertList(&tables[1])
-	util.Log().Info("list: %v", expertList)
 	return response.BuildResponse(map[int]interface{}{
 		response.DATA: expertList,
 	})
 }
 
 // 解析表格获取数据
-func ConstructExpertList(table *document.Table) []vo.RecommendExpertVO {
+func ConstructExpertList(table *document.Table) []*vo.RecommendExpertVO {
 	// 处理具体解析逻辑
 	rows := table.Rows()
 	// 数据行数
 	rowNum := len(rows) - 1
-	expertList := []vo.RecommendExpertVO{}
+	expertList := []*vo.RecommendExpertVO{}
 	for i := 1; i <= rowNum; i++ {
 		name, err := docx.GetCell(table, i, 1)
 		if err != nil {
@@ -141,7 +153,7 @@ func ConstructExpertList(table *document.Table) []vo.RecommendExpertVO {
 			Mobile:        mobile,
 			Email:         email,
 		}
-		expertList = append(expertList, expert)
+		expertList = append(expertList, &expert)
 	}
 	return expertList
 }

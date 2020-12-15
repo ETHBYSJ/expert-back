@@ -12,4 +12,5 @@ const (
 	// 具体错误码：专家推荐
 	ERROR_RECOMMEND = 30001
 	ERROR_PARSE = 30002
+	ERROR_GET = 30003
 )

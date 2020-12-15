@@ -14,6 +14,19 @@ type RecommendController struct {
 	recommendService service.RecommendService
 }
 
+// 获得专家
+func (controller *RecommendController) RecommendGet(c *gin.Context) {
+	var recommendIDVO vo.RecommendIDVO
+	if err := c.ShouldBindQuery(&recommendIDVO); err == nil {
+		res := controller.recommendService.RecommendGet(c, &recommendIDVO)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{
+			response.CODE: e.HTTP_BADREQUEST,
+		}))
+	}
+}
+
 // 专家推荐
 func (controller *RecommendController) RecommendCommit(c *gin.Context) {
 	var recommendVO vo.RecommendVO
@@ -37,9 +50,9 @@ func (controller *RecommendController) RecommendDownload(c *gin.Context) {
 
 // 专家推荐文件上传
 func (controller *RecommendController) RecommendUpload(c *gin.Context) {
-	var recommendUploadVO vo.RecommendUploadVO
-	if err := c.ShouldBindQuery(&recommendUploadVO); err == nil {
-		res := controller.recommendService.RecommendUpload(c, &recommendUploadVO)
+	var recommendIDVO vo.RecommendIDVO
+	if err := c.ShouldBindQuery(&recommendIDVO); err == nil {
+		res := controller.recommendService.RecommendUpload(c, &recommendIDVO)
 		c.JSON(http.StatusOK, res)
 	} else {
 		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{

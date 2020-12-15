@@ -18,6 +18,7 @@ func InitRouter() *gin.Engine {
 			recommend.GET("/download", recommendController.RecommendDownload)
 			recommend.POST("/commit", recommendController.RecommendCommit)
 			recommend.POST("/upload", recommendController.RecommendUpload)
+			recommend.GET("/experts", recommendController.RecommendGet)
 			// recommend.GET("/testParse", recommendController.TestParse)
 		}
 	}

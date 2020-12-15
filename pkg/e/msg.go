@@ -12,6 +12,7 @@ var MsgMap = map[int]string{
 	// 具体错误码：专家推荐
 	ERROR_RECOMMEND: "提交推荐信息错误",
 	ERROR_PARSE: "解析推荐表失败",
+	ERROR_GET: "获取推荐信息失败",
 }
 
 // 获得返回码对应的错误信息
