@@ -16,15 +16,8 @@ type RecommendController struct {
 
 // 获得专家
 func (controller *RecommendController) RecommendGet(c *gin.Context) {
-	var recommendIDVO vo.RecommendIDVO
-	if err := c.ShouldBindQuery(&recommendIDVO); err == nil {
-		res := controller.recommendService.RecommendGet(c, &recommendIDVO)
-		c.JSON(http.StatusOK, res)
-	} else {
-		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{
-			response.CODE: e.HTTP_BADREQUEST,
-		}))
-	}
+	res := controller.recommendService.RecommendGet(c)
+	c.JSON(http.StatusOK, res)
 }
 
 // 专家推荐
@@ -35,7 +28,7 @@ func (controller *RecommendController) RecommendCommit(c *gin.Context) {
 		c.JSON(http.StatusOK, res)
 	} else {
 		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{
-			response.CODE: e.HTTP_BADREQUEST,
+			response.Code: e.HttpBadRequest,
 		}))
 	}
 }
@@ -43,45 +36,14 @@ func (controller *RecommendController) RecommendCommit(c *gin.Context) {
 // 专家推荐文件下载
 func (controller *RecommendController) RecommendDownload(c *gin.Context) {
 	res := controller.recommendService.RecommendDownload(c)
-	if res.Code != e.SUCCESS {
+	if res.Code != e.Success {
 		c.JSON(http.StatusOK, res)
 	}
 }
 
 // 专家推荐文件上传
 func (controller *RecommendController) RecommendUpload(c *gin.Context) {
-	var recommendIDVO vo.RecommendIDVO
-	if err := c.ShouldBindQuery(&recommendIDVO); err == nil {
-		res := controller.recommendService.RecommendUpload(c, &recommendIDVO)
-		c.JSON(http.StatusOK, res)
-	} else {
-		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{
-			response.CODE: e.HTTP_BADREQUEST,
-		}))
-	}
+	res := controller.recommendService.RecommendUpload(c)
+	c.JSON(http.StatusOK, res)
 }
 
-/*
-func (controller *RecommendController) TestParse(c *gin.Context) {
-	doc, err := document.Open("./static/download/recommend.docx")
-	if err != nil {
-		util.Log().Panic("read doc error %v", err)
-	}
-	tables := doc.Tables()
-	util.Log().Info("table num %v", len(tables))
-	rows := tables[1].Rows()
-	for i, row := range rows {
-		cells := row.Cells()
-		for _, cell := range cells {
-			util.Log().Info("row %v", i)
-			paragraphs := cell.Paragraphs()
-			for j, para := range paragraphs {
-				// util.Log().Info("%v", para.Runs())
-				for _, run := range para.Runs() {
-					util.Log().Info("    para %v %v", j, run.Text())
-				}
-			}
-		}
-	}
-}
-*/

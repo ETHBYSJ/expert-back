@@ -25,15 +25,16 @@ type RecommendExpertVO struct {
 
 // 推荐申请
 type RecommendVO struct {
-	UserID  string 				`json:"id"`
+	// UserID  string 				`json:"id"`
 	RecommendCompanyVO			`json:"company"`
 	List []RecommendExpertVO	`json:"list"`
 }
 
+/*
 type RecommendIDVO struct {
 	UserID 	string		`form:"id"`
 }
-
+*/
 // 解析后的结果
 type RecommendParseVO struct {
 	List 	[]RecommendExpertVO	`json:"list"`

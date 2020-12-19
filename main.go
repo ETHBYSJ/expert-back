@@ -3,8 +3,8 @@ package main
 import (
 	"expert-back/initialize"
 	"expert-back/pkg/conf"
+	util2 "expert-back/pkg/util"
 	"expert-back/router"
-	"expert-back/util"
 )
 
 func init() {
@@ -13,8 +13,8 @@ func init() {
 
 func main() {
 	api := router.InitRouter()
-	util.Log().Info("开始监听 %s", conf.SystemConfig.System.Listen)
+	util2.Log().Info("开始监听 %s", conf.SystemConfig.System.Listen)
 	if err := api.Run(conf.SystemConfig.System.Listen); err != nil {
-		util.Log().Error("无法监听[%s], %s", conf.SystemConfig.System.Listen, err)
+		util2.Log().Error("无法监听[%s], %s", conf.SystemConfig.System.Listen, err)
 	}
 }

@@ -3,7 +3,7 @@ package model
 
 import (
 	"expert-back/db"
-	"expert-back/util"
+	util2 "expert-back/pkg/util"
 	"expert-back/vo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -45,7 +45,7 @@ func GetExpertsByCompanyID(companyID string) ([]*RecommendExpert, error) {
 	for cursor.Next(db.DBConn.Context) {
 		expert := RecommendExpert{}
 		if err := cursor.Decode(&expert); err != nil {
-			util.Log().Info("err = %v", err)
+			util2.Log().Info("err = %v", err)
 			return experts, err
 		}
 		experts = append(experts, &expert)

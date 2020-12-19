@@ -12,6 +12,7 @@ func InitRouter() *gin.Engine {
 	v1 := r.Group("/api/v1")
 	{
 		v1.GET("/cookie", commonController.SetCookie)
+		v1.GET("/profile", commonController.GetAccountProfile)
 		recommend := v1.Group("/recommend")
 		{
 			// 提交推荐信息
@@ -19,7 +20,6 @@ func InitRouter() *gin.Engine {
 			recommend.POST("/commit", recommendController.RecommendCommit)
 			recommend.POST("/upload", recommendController.RecommendUpload)
 			recommend.GET("/experts", recommendController.RecommendGet)
-			// recommend.GET("/testParse", recommendController.TestParse)
 		}
 	}
 

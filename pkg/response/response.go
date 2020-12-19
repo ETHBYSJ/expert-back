@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	CODE = 1
-	DATA = 2
-	MSG = 3
+	Code = 1
+	Data = 2
+	Msg = 3
 )
 
 type Response struct {
@@ -20,20 +20,20 @@ type Response struct {
 func BuildResponse(m map[int]interface{}) Response {
 	var code int
 	var msg string
-	if _, ok := m[CODE]; ok {
-		code = m[CODE].(int)
+	if _, ok := m[Code]; ok {
+		code = m[Code].(int)
 	} else {
-		code = e.SUCCESS
+		code = e.Success
 	}
-	if _, ok := m[MSG]; ok {
-		msg = m[MSG].(string)
+	if _, ok := m[Msg]; ok {
+		msg = m[Msg].(string)
 	} else {
 		msg = e.GetMsg(code)
 	}
-	if _, ok := m[DATA]; ok {
+	if _, ok := m[Data]; ok {
 		return Response{
 			Code: code,
-			Data: m[DATA],
+			Data: m[Data],
 			Msg: msg,
 		}
 	} else {

@@ -41,7 +41,7 @@ func (service *FileService) DownloadFile(c *gin.Context, path string, name strin
 	file, err := os.Open(path)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
-			response.CODE: e.ERROR_DOWNLOAD,
+			response.Code: e.ErrorDownload,
 		})
 	}
 	defer file.Close()
@@ -57,7 +57,7 @@ func (service *FileService) UploadFile(c *gin.Context, userID string) response.R
 	file, err := c.FormFile("file")
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
-			response.CODE: e.ERROR_UPLOAD,
+			response.Code: e.ErrorUpload,
 		})
 	}
 	path := conf.SystemConfig.File.Upload.Recommend.Path
@@ -66,10 +66,10 @@ func (service *FileService) UploadFile(c *gin.Context, userID string) response.R
 	err = SaveUploadedFile(file, fullPath)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
-			response.CODE: e.ERROR_UPLOAD,
+			response.Code: e.ErrorUpload,
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{
-		response.DATA: fullPath,
+		response.Data: fullPath,
 	})
 }

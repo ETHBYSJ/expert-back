@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"expert-back/util"
+	util2 "expert-back/pkg/util"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -21,13 +21,13 @@ func Init(connection string, dbName string) {
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connection))
 	if err != nil {
-		util.Log().Panic("连接数据库出错: %s", err)
+		util2.Log().Panic("连接数据库出错: %s", err)
 	}
 	ctxPing, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
 	defer cancel()
 	err = client.Ping(ctxPing, readpref.Primary())
 	if err != nil {
-		util.Log().Panic("连接数据库失败: %s", err)
+		util2.Log().Panic("连接数据库失败: %s", err)
 	}
 	db := client.Database(dbName)
 	DBConn = &Database{DB: db, Client: client, Context: backgroundCtx}
@@ -60,9 +60,9 @@ func CreateIndex(collection string, unique bool, keys ...string) {
 		},
 	)
 	if result == "" || err != nil {
-		util.Log().Error("创建索引失败", err)
+		util2.Log().Error("创建索引失败", err)
 	} else {
-		util.Log().Info("创建索引: %s", result)
+		util2.Log().Info("创建索引: %s", result)
 	}
 }
 
