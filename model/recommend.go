@@ -14,17 +14,17 @@ import (
 type RecommendCompany struct {
 	CompanyID	primitive.ObjectID	`bson:"_id"`
 	vo.RecommendCompanyVO
-	UserID 		string 	`json:"userID" bson:"userID"`		// 当前用户id
+	UserID 		primitive.ObjectID 	`json:"userID" bson:"userID"`		// 当前用户id
 }
 
 // 专家推荐
 type RecommendExpert struct {
 	vo.RecommendExpertVO
-	CompanyID 		string 	`json:"companyID" bson:"companyID"`			// 推荐单位id
+	CompanyID 		primitive.ObjectID 	`json:"companyID" bson:"companyID"`			// 推荐单位id
 }
 
 // 根据用户id获得单位信息
-func GetCompanyByUserID(userID string) (*RecommendCompany, error) {
+func getRecommendCompanyByUserID(userID primitive.ObjectID) (*RecommendCompany, error) {
 	var recommendCompany RecommendCompany
 	if err := db.DBConn.DB.Collection("companies").
 		FindOne(db.DBConn.Context, bson.D{{"userID", userID}}).
@@ -35,8 +35,8 @@ func GetCompanyByUserID(userID string) (*RecommendCompany, error) {
 }
 
 // 根据单位id获得专家信息
-func GetExpertsByCompanyID(companyID string) ([]*RecommendExpert, error) {
-	experts := []*RecommendExpert{}
+func GetRecommendExpertsByCompanyID(companyID primitive.ObjectID) ([]*vo.RecommendExpertVO, error) {
+	experts := []*vo.RecommendExpertVO{}
 	cursor, err := db.DBConn.DB.Collection("experts").Find(db.DBConn.Context, bson.D{{Key: "companyID", Value: companyID}})
 	if err != nil {
 		return experts, err
@@ -48,22 +48,22 @@ func GetExpertsByCompanyID(companyID string) ([]*RecommendExpert, error) {
 			util2.Log().Info("err = %v", err)
 			return experts, err
 		}
-		experts = append(experts, &expert)
+		experts = append(experts, &expert.RecommendExpertVO)
 	}
 	return experts, nil
 }
 
 // 根据用户id获得专家信息
-func GetExpertsByUserID(userID string) ([]*RecommendExpert, error) {
-	company, err := GetCompanyByUserID(userID)
+func GetRecommendExpertsByUserID(userID primitive.ObjectID) ([]*vo.RecommendExpertVO, error) {
+	company, err := getRecommendCompanyByUserID(userID)
 	if err != nil {
 		// util.Log().Info("err1 = %v", err)
-		return []*RecommendExpert{}, nil
+		return []*vo.RecommendExpertVO{}, nil
 	}
-	experts, err := GetExpertsByCompanyID(company.CompanyID.Hex())
+	experts, err := GetRecommendExpertsByCompanyID(company.CompanyID)
 	if err != nil {
 		// util.Log().Info("err2 = %v", err)
-		return []*RecommendExpert{}, err
+		return []*vo.RecommendExpertVO{}, err
 	}
 	return experts, nil
 }
@@ -79,25 +79,25 @@ func ClearExpertsByCompanyID(companyID string) error {
 
 
 // 保存单位信息
-func SaveOrUpdateCompanyInfo(recommendCompany *RecommendCompany) (string, error) {
+func SaveOrUpdateRecommendCompanyInfo(recommendCompany *RecommendCompany) (primitive.ObjectID, error) {
 	updateRes, err := db.DBConn.DB.Collection("companies").
 		UpdateOne(db.DBConn.Context, bson.D{{"userID", recommendCompany.UserID}}, bson.D{{"$set", bson.D{{"recommendcompanyvo", recommendCompany.RecommendCompanyVO}}}}, options.Update().SetUpsert(true))
 	if err != nil {
-		return "", err
+		return primitive.NilObjectID, err
 	}
 	if updateRes.UpsertedCount != 0 {
 		objectID := updateRes.UpsertedID.(primitive.ObjectID)
-		return objectID.Hex(), nil
+		return objectID, nil
 	}
-	oldCompany, err := GetCompanyByUserID(recommendCompany.UserID)
+	oldCompany, err := getRecommendCompanyByUserID(recommendCompany.UserID)
 	if err != nil {
-		return "", err
+		return primitive.NilObjectID, err
 	}
-	return oldCompany.CompanyID.Hex(), nil
+	return oldCompany.CompanyID, nil
 }
 
 // 保存专家信息
-func SaveExpertsInfo(recommendExperts []interface{}) error {
+func SaveRecommendExpertsInfo(recommendExperts []interface{}) error {
 	if _, err := db.DBConn.DB.Collection("experts").
 		InsertMany(db.DBConn.Context, recommendExperts); err != nil {
 		return err

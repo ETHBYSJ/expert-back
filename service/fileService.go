@@ -5,6 +5,7 @@ import (
 	"expert-back/pkg/e"
 	"expert-back/pkg/response"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -53,7 +54,7 @@ func (service *FileService) DownloadFile(c *gin.Context, path string, name strin
 }
 
 // 上传文件
-func (service *FileService) UploadFile(c *gin.Context, userID string) response.Response {
+func (service *FileService) UploadFile(c *gin.Context, userID primitive.ObjectID) response.Response {
 	file, err := c.FormFile("file")
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
@@ -61,7 +62,7 @@ func (service *FileService) UploadFile(c *gin.Context, userID string) response.R
 		})
 	}
 	path := conf.SystemConfig.File.Upload.Recommend.Path
-	fileName := userID + "_" + file.Filename
+	fileName := userID.Hex() + "_" + file.Filename
 	fullPath := filepath.Join(path, fileName)
 	err = SaveUploadedFile(file, fullPath)
 	if err != nil {
@@ -73,3 +74,5 @@ func (service *FileService) UploadFile(c *gin.Context, userID string) response.R
 		response.Data: fullPath,
 	})
 }
+
+

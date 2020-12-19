@@ -26,10 +26,10 @@ func (service *RecommendService) RecommendGet(c *gin.Context) response.Response 
 			response.Code: e.ErrorGetAccountProfile,
 		})
 	}
-	experts, err := model.GetExpertsByUserID(profile.Id.Hex())
+	experts, err := model.GetRecommendExpertsByUserID(profile.Id)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
-			response.Code: e.ErrorGet,
+			response.Code: e.ErrorRecommendGet,
 			response.Data: experts,
 		})
 	}
@@ -39,17 +39,17 @@ func (service *RecommendService) RecommendGet(c *gin.Context) response.Response 
 }
 
 // 提交专家推荐信息
-func (service *RecommendService) RecommendCommit(c *gin.Context, recommendVO *vo.RecommendVO) response.Response {
+func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo.RecommendVO) response.Response {
 	profile, err := util.GinGetAccountProfile(c)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorGetAccountProfile,
 		})
 	}
-	recommendCompany := &model.RecommendCompany{UserID: profile.Id.Hex(), RecommendCompanyVO: recommendVO.RecommendCompanyVO}
+	recommendCompany := &model.RecommendCompany{UserID: profile.Id, RecommendCompanyVO: recommendVO.RecommendCompanyVO}
 	// 保存或更新单位信息
-	companyID, err := model.SaveOrUpdateCompanyInfo(recommendCompany)
-	if companyID == "" || err != nil {
+	companyID, err := model.SaveOrUpdateRecommendCompanyInfo(recommendCompany)
+	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommend,
 		})
@@ -62,7 +62,7 @@ func (service *RecommendService) RecommendCommit(c *gin.Context, recommendVO *vo
 	for i := 0; i < len(list); i++ {
 		experts[i] = &model.RecommendExpert{CompanyID: companyID, RecommendExpertVO: list[i]}
 	}
-	if err := model.SaveExpertsInfo(experts); err != nil {
+	if err := model.SaveRecommendExpertsInfo(experts); err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommend,
 		})
@@ -84,7 +84,7 @@ func (service *RecommendService) RecommendUpload(c *gin.Context) response.Respon
 			response.Code: e.ErrorGetAccountProfile,
 		})
 	}
-	res := service.fileService.UploadFile(c, profile.Id.Hex())
+	res := service.fileService.UploadFile(c, profile.Id)
 	if res.Code != e.Success {
 		return res
 	}
@@ -93,7 +93,7 @@ func (service *RecommendService) RecommendUpload(c *gin.Context) response.Respon
 	tables, err := docx.Parse(path)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
-			response.Code: e.ErrorParse,
+			response.Code: e.ErrorRecommendParse,
 		})
 	}
 	expertList := ConstructExpertList(&tables[1])

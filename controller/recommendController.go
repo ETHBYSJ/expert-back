@@ -21,10 +21,10 @@ func (controller *RecommendController) RecommendGet(c *gin.Context) {
 }
 
 // 专家推荐
-func (controller *RecommendController) RecommendCommit(c *gin.Context) {
+func (controller *RecommendController) RecommendSubmit(c *gin.Context) {
 	var recommendVO vo.RecommendVO
 	if err := c.ShouldBindJSON(&recommendVO); err == nil {
-		res := controller.recommendService.RecommendCommit(c, &recommendVO)
+		res := controller.recommendService.RecommendSubmit(c, &recommendVO)
 		c.JSON(http.StatusOK, res)
 	} else {
 		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{

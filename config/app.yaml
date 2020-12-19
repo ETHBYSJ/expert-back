@@ -9,6 +9,8 @@ file:
   upload:
     recommend:
       path: ./static/upload/recommend
+    picture:
+      path: ./static/upload/picture
 database:
   name: expert
   connection: mongodb://202.120.39.3:27017

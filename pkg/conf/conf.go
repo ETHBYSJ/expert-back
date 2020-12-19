@@ -27,6 +27,9 @@ type SystemConf struct {
 			Recommend struct {
 				Path string
 			}
+			Picture struct {
+				Path string
+			}
 		}
 	}
 	Database struct {

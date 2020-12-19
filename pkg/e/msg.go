@@ -11,8 +11,11 @@ var MsgMap = map[int]string{
 	ErrorUpload:   "上传失败",
 	// 具体错误码：专家推荐
 	ErrorRecommend: "提交推荐信息错误",
-	ErrorParse:     "解析推荐表失败",
-	ErrorGet:       "获取推荐信息失败",
+	ErrorRecommendParse:     "解析推荐表失败",
+	ErrorRecommendGet:       "获取推荐信息失败",
+	// 具体错误码：专家申请
+	ErrorApplyCreate: "创建专家申请失败",
+	ErrorApplyUpdate: "更新申请信息失败",
 	// 其他错误码
 	ErrorGetAccountProfile: "获取用户信息失败",
 }

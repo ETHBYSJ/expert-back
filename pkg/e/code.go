@@ -11,8 +11,11 @@ const (
 	ErrorUpload   = 20002
 	// 具体错误码：专家推荐
 	ErrorRecommend = 30001
-	ErrorParse     = 30002
-	ErrorGet       = 30003
+	ErrorRecommendParse     = 30002
+	ErrorRecommendGet       = 30003
+	// 具体错误码：专家申请
+	ErrorApplyCreate = 40001
+	ErrorApplyUpdate = 40002
 	// 其他错误码
-	ErrorGetAccountProfile = 40001
+	ErrorGetAccountProfile = 50001
 )

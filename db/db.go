@@ -36,6 +36,8 @@ func Init(connection string, dbName string) {
 	_ = DBConn.DB.CreateCollection(DBConn.Context, "companies")
 	// 专家推荐信息
 	_ = DBConn.DB.CreateCollection(DBConn.Context, "experts")
+	// 专家申请信息
+	_ = DBConn.DB.CreateCollection(DBConn.Context, "apply")
 	// 创建索引
 	// CreateIndex("users", "openId")
 }
