@@ -12,7 +12,19 @@ import (
 )
 
 type ApplyService struct {
+	fileService FileService
+}
 
+// 上传照片
+func (service *ApplyService) ApplyUpload(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	res := service.fileService.UploadPhoto(c, profile.Id)
+	return res
 }
 
 // 创建专家申请并返回id

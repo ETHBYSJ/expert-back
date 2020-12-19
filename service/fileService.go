@@ -75,4 +75,26 @@ func (service *FileService) UploadFile(c *gin.Context, userID primitive.ObjectID
 	})
 }
 
+// 上传照片
+func (service *FileService) UploadPhoto(c *gin.Context, userID primitive.ObjectID) response.Response {
+	file, err := c.FormFile("photo")
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorUpload,
+		})
+	}
+	path := conf.SystemConfig.File.Upload.Picture.Path
+	fileName := userID.Hex() + "_" + file.Filename
+	fullPath := filepath.Join(path, fileName)
+	err = SaveUploadedFile(file, fullPath)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorUpload,
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.Data: "./static/" + fileName,
+	})
+}
+
 
