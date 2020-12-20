@@ -13,13 +13,14 @@ type ApplyController struct {
 	applyService service.ApplyService
 }
 
+
 // 上传照片
 func (controller *ApplyController) ApplyUpload(c *gin.Context) {
 	res := controller.applyService.ApplyUpload(c)
 	c.JSON(http.StatusOK, res)
 }
 
-// 创建申请
+// 创建专家申请
 func (controller *ApplyController) ApplyCreate(c *gin.Context) {
 	res := controller.applyService.ApplyCreate(c)
 	c.JSON(http.StatusOK, res)
@@ -88,4 +89,10 @@ func (controller *ApplyController) ApplySubmitOpinion(c *gin.Context) {
 			response.Code: e.HttpBadRequest,
 		}))
 	}
+}
+
+// 获取申请记录
+func (controller *ApplyController) ApplyRecords(c *gin.Context) {
+	res := controller.applyService.ApplyRecords(c)
+	c.JSON(http.StatusOK, res)
 }

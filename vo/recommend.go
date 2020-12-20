@@ -2,10 +2,10 @@ package vo
 
 // 工作单位
 type RecommendCompanyVO struct {
-	Name 		string	`json:"name" bson:"name"`			// 填报单位
-	Director 	string	`json:"director" bson:"director"`	// 单位负责人
-	Agent 		string	`json:"agent" bson:"agent"`			// 经办人
-	Phone 		string 	`json:"phone" bson:"phone"`			// 联系电话
+	Name 		string		`json:"name" bson:"name"`			// 填报单位，用于区分单位
+	Director 	string		`json:"director" bson:"director"`	// 单位负责人
+	Agent 		string		`json:"agent" bson:"agent"`			// 经办人
+	Phone 		string 		`json:"phone" bson:"phone"`			// 联系电话
 }
 
 // 专家推荐
@@ -25,12 +25,17 @@ type RecommendExpertVO struct {
 
 // 推荐申请
 type RecommendVO struct {
-	// UserID  string 				`json:"id"`
 	RecommendCompanyVO			`json:"company"`
 	List []RecommendExpertVO	`json:"list"`
+	SubmitID string				`json:"submitID"`
 }
 
 // 解析后的结果
 type RecommendParseVO struct {
 	List 	[]RecommendExpertVO	`json:"list"`
 }
+
+type RecommendGetSubmitVO struct {
+	SubmitID	string 	`form:"submitID"`
+}
+

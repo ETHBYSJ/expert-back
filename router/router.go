@@ -23,8 +23,10 @@ func InitRouter() *gin.Engine {
 			recommend.POST("/upload", recommendController.RecommendUpload)
 			// 下载推荐表
 			recommend.GET("/download", recommendController.RecommendDownload)
-			// 获取推荐专家信息
-			recommend.GET("/experts", recommendController.RecommendGet)
+			// 根据提交id获取信息
+			recommend.GET("/getSubmit", recommendController.RecommendGetSubmit)
+			// 获取推荐记录
+			recommend.GET("/records", recommendController.RecommendRecords)
 		}
 		apply := v1.Group("/apply")
 		{
@@ -46,6 +48,8 @@ func InitRouter() *gin.Engine {
 			apply.POST("/submitResume", applyController.ApplySubmitResume)
 			// 提交意见评价
 			apply.POST("/submitOpinion", applyController.ApplySubmitOpinion)
+			// 获取推荐记录
+			apply.GET("/records", applyController.ApplyRecords)
 		}
 	}
 	r.StaticFS("/static", http.Dir("./static/upload/picture"))

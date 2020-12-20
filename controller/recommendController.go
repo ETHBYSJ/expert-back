@@ -14,10 +14,17 @@ type RecommendController struct {
 	recommendService service.RecommendService
 }
 
-// 获得专家
-func (controller *RecommendController) RecommendGet(c *gin.Context) {
-	res := controller.recommendService.RecommendGet(c)
-	c.JSON(http.StatusOK, res)
+// 根据提交id获取信息
+func (controller *RecommendController) RecommendGetSubmit(c *gin.Context) {
+	var recommendGetSubmitVO vo.RecommendGetSubmitVO
+	if err := c.ShouldBindQuery(&recommendGetSubmitVO); err == nil {
+		res := controller.recommendService.RecommendGetSubmit(c, &recommendGetSubmitVO)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{
+			response.Code: e.HttpBadRequest,
+		}))
+	}
 }
 
 // 专家推荐
@@ -44,6 +51,12 @@ func (controller *RecommendController) RecommendDownload(c *gin.Context) {
 // 专家推荐文件上传
 func (controller *RecommendController) RecommendUpload(c *gin.Context) {
 	res := controller.recommendService.RecommendUpload(c)
+	c.JSON(http.StatusOK, res)
+}
+
+// 获取推荐记录
+func (controller *RecommendController) RecommendRecords(c *gin.Context) {
+	res := controller.recommendService.RecommendRecords(c)
 	c.JSON(http.StatusOK, res)
 }
 

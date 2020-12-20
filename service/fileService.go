@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -19,6 +20,22 @@ import (
 // 文件相关
 type FileService struct {
 
+}
+
+// 删除某id对应的文件
+func removeFileListById(id primitive.ObjectID, path string) {
+	dir, err := os.Open(path)
+	if err != nil {
+		return
+	}
+	defer dir.Close()
+	list, err := dir.Readdir(-1)
+	for _, f := range list {
+		fileName := f.Name()
+		if strings.HasPrefix(fileName, id.Hex()) {
+			os.Remove(filepath.Join(path, fileName))
+		}
+	}
 }
 
 // 保存上传的文件
@@ -53,17 +70,17 @@ func (service *FileService) DownloadFile(c *gin.Context, path string, name strin
 	return response.BuildResponse(map[int]interface{}{})
 }
 
-// 上传文件
-func (service *FileService) UploadFile(c *gin.Context, userID primitive.ObjectID) response.Response {
+// 上传文件，通用函数
+func (service *FileService) uploadFile(c *gin.Context, userID primitive.ObjectID, path string) response.Response {
 	file, err := c.FormFile("file")
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorUpload,
 		})
 	}
-	path := conf.SystemConfig.File.Upload.Recommend.Path
 	fileName := userID.Hex() + "_" + file.Filename
 	fullPath := filepath.Join(path, fileName)
+	removeFileListById(userID, path)
 	err = SaveUploadedFile(file, fullPath)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
@@ -73,6 +90,11 @@ func (service *FileService) UploadFile(c *gin.Context, userID primitive.ObjectID
 	return response.BuildResponse(map[int]interface{}{
 		response.Data: fullPath,
 	})
+}
+
+// 上传文件
+func (service *FileService) UploadRecommendFile(c *gin.Context, userID primitive.ObjectID) response.Response {
+	return service.uploadFile(c, userID, conf.SystemConfig.File.Upload.Recommend.Path)
 }
 
 // 上传照片
@@ -86,6 +108,7 @@ func (service *FileService) UploadPhoto(c *gin.Context, userID primitive.ObjectI
 	path := conf.SystemConfig.File.Upload.Picture.Path
 	fileName := userID.Hex() + "_" + file.Filename
 	fullPath := filepath.Join(path, fileName)
+	removeFileListById(userID, path)
 	err = SaveUploadedFile(file, fullPath)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{

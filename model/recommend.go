@@ -3,7 +3,6 @@ package model
 
 import (
 	"expert-back/db"
-	util2 "expert-back/pkg/util"
 	"expert-back/vo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -12,97 +11,84 @@ import (
 
 // 单位信息
 type RecommendCompany struct {
-	CompanyID	primitive.ObjectID	`bson:"_id"`
-	vo.RecommendCompanyVO
-	UserID 		primitive.ObjectID 	`json:"userID" bson:"userID"`		// 当前用户id
+	vo.RecommendCompanyVO	`bson:"recommendCompany"`
+	UserID 		primitive.ObjectID 	`bson:"userID"`		// 当前用户id
 }
 
 // 专家推荐
 type RecommendExpert struct {
-	vo.RecommendExpertVO
-	CompanyID 		primitive.ObjectID 	`json:"companyID" bson:"companyID"`			// 推荐单位id
+	vo.RecommendExpertVO	`bson:"recommendExpert"`
+	UserID 	primitive.ObjectID	`json:"-" bson:"userID"`	// 当前用户id
+	SubmitID 		string 	`json:"-" bson:"submitID"`							// 本次提交id
 }
 
-// 根据用户id获得单位信息
-func getRecommendCompanyByUserID(userID primitive.ObjectID) (*RecommendCompany, error) {
+// 根据某次提交id获得单位名
+func GetRecommendCompanyNameBySubmitID(submitID string) (string, error) {
+	var record Record
+	if err := db.DBConn.DB.Collection("records").
+		FindOne(db.DBConn.Context, bson.D{{"_id", submitID}}).
+		Decode(&record); err != nil {
+		return "", err
+	}
+	return record.CompanyName, nil
+}
+
+// 根据某次提交id获得单位信息
+func GetRecommendCompanyByName(name string) (*RecommendCompany, error) {
 	var recommendCompany RecommendCompany
 	if err := db.DBConn.DB.Collection("companies").
-		FindOne(db.DBConn.Context, bson.D{{"userID", userID}}).
+		FindOne(db.DBConn.Context, bson.D{{"recommendCompany.name", name}}).
 		Decode(&recommendCompany); err != nil {
-			return nil, err
+		return nil, err
 	}
 	return &recommendCompany, nil
 }
 
-// 根据单位id获得专家信息
-func GetRecommendExpertsByCompanyID(companyID primitive.ObjectID) ([]*vo.RecommendExpertVO, error) {
-	experts := []*vo.RecommendExpertVO{}
-	cursor, err := db.DBConn.DB.Collection("experts").Find(db.DBConn.Context, bson.D{{Key: "companyID", Value: companyID}})
+// 根据某次提交id获得专家推荐信息
+func GetRecommendExpertsBySubmitID(submitID string) ([]*RecommendExpert, error) {
+	experts := []*RecommendExpert{}
+	cursor, err := db.DBConn.DB.Collection("experts").Find(db.DBConn.Context, bson.D{{"submitID", submitID}})
 	if err != nil {
 		return experts, err
 	}
 	defer cursor.Close(db.DBConn.Context)
 	for cursor.Next(db.DBConn.Context) {
-		expert := RecommendExpert{}
+		var expert RecommendExpert
 		if err := cursor.Decode(&expert); err != nil {
-			util2.Log().Info("err = %v", err)
 			return experts, err
 		}
-		experts = append(experts, &expert.RecommendExpertVO)
+		experts = append(experts, &expert)
 	}
 	return experts, nil
 }
 
-// 根据用户id获得专家信息
-func GetRecommendExpertsByUserID(userID primitive.ObjectID) ([]*vo.RecommendExpertVO, error) {
-	company, err := getRecommendCompanyByUserID(userID)
-	if err != nil {
-		// util.Log().Info("err1 = %v", err)
-		return []*vo.RecommendExpertVO{}, nil
-	}
-	experts, err := GetRecommendExpertsByCompanyID(company.CompanyID)
-	if err != nil {
-		// util.Log().Info("err2 = %v", err)
-		return []*vo.RecommendExpertVO{}, err
-	}
-	return experts, nil
-}
-
-// 清空某单位对应的专家列表
-func ClearExpertsByCompanyID(companyID string) error {
-	if _, err := db.DBConn.DB.Collection("experts").
-		DeleteMany(db.DBConn.Context, bson.D{{"companyID", companyID}}); err != nil {
-			return err
+// 保存或更新单位信息
+func SaveOrUpdateRecommendCompany(recommendCompany *RecommendCompany) error {
+	if _, err := db.DBConn.DB.Collection("companies").
+		UpdateOne(db.DBConn.Context, bson.D{{"recommendCompany.name", recommendCompany.Name}}, bson.D{{"$set", bson.D{{"userID", recommendCompany.UserID}, {"recommendCompany", recommendCompany.RecommendCompanyVO}}}}, options.Update().SetUpsert(true)); err != nil {
+		return err
 	}
 	return nil
 }
 
 
-// 保存单位信息
-func SaveOrUpdateRecommendCompanyInfo(recommendCompany *RecommendCompany) (primitive.ObjectID, error) {
-	updateRes, err := db.DBConn.DB.Collection("companies").
-		UpdateOne(db.DBConn.Context, bson.D{{"userID", recommendCompany.UserID}}, bson.D{{"$set", bson.D{{"recommendcompanyvo", recommendCompany.RecommendCompanyVO}}}}, options.Update().SetUpsert(true))
-	if err != nil {
-		return primitive.NilObjectID, err
+// 根据提交id删除专家
+func DeleteRecommendExpertsBySubmitID(submitID string) error {
+	if _, err := db.DBConn.DB.Collection("experts").
+		DeleteMany(db.DBConn.Context, bson.D{{"submitID", submitID}}); err != nil {
+		return err
 	}
-	if updateRes.UpsertedCount != 0 {
-		objectID := updateRes.UpsertedID.(primitive.ObjectID)
-		return objectID, nil
-	}
-	oldCompany, err := getRecommendCompanyByUserID(recommendCompany.UserID)
-	if err != nil {
-		return primitive.NilObjectID, err
-	}
-	return oldCompany.CompanyID, nil
+	return nil
 }
 
 // 保存专家信息
-func SaveRecommendExpertsInfo(recommendExperts []interface{}) error {
+func SaveRecommendExperts(recommendExperts []interface{}) error {
 	if _, err := db.DBConn.DB.Collection("experts").
 		InsertMany(db.DBConn.Context, recommendExperts); err != nil {
 		return err
 	}
 	return nil
 }
+
 
 

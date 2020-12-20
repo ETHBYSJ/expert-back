@@ -27,7 +27,7 @@ func (service *ApplyService) ApplyUpload(c *gin.Context) response.Response {
 	return res
 }
 
-// 创建专家申请并返回id
+// 创建专家申请
 func (service *ApplyService) ApplyCreate(c *gin.Context) response.Response {
 	profile, err := util.GinGetAccountProfile(c)
 	if err != nil {
@@ -123,4 +123,23 @@ func (service *ApplyService) ApplySubmitOpinion(c *gin.Context, applyOpinionVO *
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{})
+}
+
+// 获取申请记录
+func (service *ApplyService) ApplyRecords(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	records, err := model.GetApplyRecordsByUserID(profile.Id)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorApplyRecordsGet,
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.Data: records,
+	})
 }
