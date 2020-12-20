@@ -50,8 +50,15 @@ func (controller *RecommendController) RecommendDownload(c *gin.Context) {
 
 // 专家推荐文件上传
 func (controller *RecommendController) RecommendUpload(c *gin.Context) {
-	res := controller.recommendService.RecommendUpload(c)
-	c.JSON(http.StatusOK, res)
+	var recommendUploadVO vo.RecommendUploadVO
+	if err := c.ShouldBindQuery(&recommendUploadVO); err == nil {
+		res := controller.recommendService.RecommendUpload(c, &recommendUploadVO)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{
+			response.Code: e.HttpBadRequest,
+		}))
+	}
 }
 
 // 获取推荐记录
@@ -59,4 +66,3 @@ func (controller *RecommendController) RecommendRecords(c *gin.Context) {
 	res := controller.recommendService.RecommendRecords(c)
 	c.JSON(http.StatusOK, res)
 }
-

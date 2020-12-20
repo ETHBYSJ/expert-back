@@ -11,12 +11,12 @@ import (
 
 // 专家申请
 type ApplyExpert struct {
-	vo.ApplyBaseVO				`bson:"applyBase"`			// 基本信息
-	vo.ApplyMajorVO				`bson:"applyMajor"`			// 专业类别
-	vo.ApplyResearchFieldVO  	`bson:"applyResearchField"`	// 专攻领域
-	vo.ApplyResumeVO			`bson:"applyResume"`		// 个人履历
-	vo.ApplyOpinionVO			`bson:"applyOpinion"`		// 意见评价
-	UserID	primitive.ObjectID	`bson:"userID"`				// 用户id
+	vo.ApplyBaseVO          `bson:"applyBase"`          // 基本信息
+	vo.ApplyMajorVO         `bson:"applyMajor"`         // 专业类别
+	vo.ApplyResearchFieldVO `bson:"applyResearchField"` // 专攻领域
+	vo.ApplyResumeVO        `bson:"applyResume"`        // 个人履历
+	vo.ApplyOpinionVO       `bson:"applyOpinion"`       // 意见评价
+	UserID                  primitive.ObjectID          `bson:"userID"` // 用户id
 }
 
 // 根据用户id获得申请信息
@@ -25,7 +25,7 @@ func GetApplyByUserID(userID primitive.ObjectID) (*ApplyExpert, error) {
 	if err := db.DBConn.DB.Collection("apply").
 		FindOne(db.DBConn.Context, bson.D{{"userID", userID}}).
 		Decode(&applyExpert); err != nil {
-			return nil, err
+		return nil, err
 	}
 	return &applyExpert, nil
 }
@@ -84,7 +84,3 @@ func SaveApplyResume(userID primitive.ObjectID, applyResumeVO *vo.ApplyResumeVO)
 func SaveApplyOpinion(userID primitive.ObjectID, applyOpinionVO *vo.ApplyOpinionVO) error {
 	return saveApplyInfo(userID, "applyOpinion", applyOpinionVO)
 }
-
-
-
-

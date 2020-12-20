@@ -33,7 +33,7 @@ type SystemConf struct {
 		}
 	}
 	Database struct {
-		Name string
+		Name       string
 		Connection string
 	}
 }
@@ -50,4 +50,3 @@ func Init(path string) {
 	}
 	// util.Log().Info("配置文件内容: %v", SystemConfig)
 }
-

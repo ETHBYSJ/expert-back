@@ -17,13 +17,13 @@ var DBConn *Database
 // 连接数据库
 func Init(connection string, dbName string) {
 	backgroundCtx := context.Background()
-	ctx, cancel := context.WithTimeout(backgroundCtx, 10 * time.Second)
+	ctx, cancel := context.WithTimeout(backgroundCtx, 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(connection))
 	if err != nil {
 		util2.Log().Panic("连接数据库出错: %s", err)
 	}
-	ctxPing, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	ctxPing, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	err = client.Ping(ctxPing, readpref.Primary())
 	if err != nil {
@@ -33,7 +33,7 @@ func Init(connection string, dbName string) {
 	DBConn = &Database{DB: db, Client: client, Context: backgroundCtx}
 	// 创建集合
 	// 单位
-	_ = DBConn.DB.CreateCollection(DBConn.Context, "companies")
+	_ = DBConn.DB.CreateCollection(DBConn.Context, "departments")
 	// 专家推荐信息
 	_ = DBConn.DB.CreateCollection(DBConn.Context, "experts")
 	// 专家推荐记录/专家申请记录
@@ -59,7 +59,7 @@ func CreateIndex(collection string, unique bool, keys ...string) {
 	result, err := indexView.CreateOne(
 		DBConn.Context,
 		mongo.IndexModel{
-			Keys: keysDoc,
+			Keys:    keysDoc,
 			Options: options.Index().SetUnique(unique),
 		},
 	)
@@ -70,9 +70,8 @@ func CreateIndex(collection string, unique bool, keys ...string) {
 	}
 }
 
-
 type Database struct {
-	DB 		*mongo.Database
-	Client 	*mongo.Client
+	DB      *mongo.Database
+	Client  *mongo.Client
 	Context context.Context
 }

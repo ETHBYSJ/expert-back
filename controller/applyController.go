@@ -13,7 +13,6 @@ type ApplyController struct {
 	applyService service.ApplyService
 }
 
-
 // 上传照片
 func (controller *ApplyController) ApplyUpload(c *gin.Context) {
 	res := controller.applyService.ApplyUpload(c)
@@ -39,6 +38,11 @@ func (controller *ApplyController) ApplySubmitBase(c *gin.Context) {
 	}
 }
 
+// 获取基本信息
+func (controller *ApplyController) ApplyGetBase(c *gin.Context) {
+
+}
+
 // 提交专业类别
 func (controller *ApplyController) ApplySubmitMajor(c *gin.Context) {
 	var applyMajorVO vo.ApplyMajorVO
@@ -51,6 +55,8 @@ func (controller *ApplyController) ApplySubmitMajor(c *gin.Context) {
 		}))
 	}
 }
+
+// 获取专业类别
 
 // 提交专攻领域
 func (controller *ApplyController) ApplySubmitResearchField(c *gin.Context) {
@@ -65,6 +71,8 @@ func (controller *ApplyController) ApplySubmitResearchField(c *gin.Context) {
 	}
 }
 
+// 获取专攻领域
+
 // 提交个人履历
 func (controller *ApplyController) ApplySubmitResume(c *gin.Context) {
 	var applyResumeVO vo.ApplyResumeVO
@@ -78,6 +86,8 @@ func (controller *ApplyController) ApplySubmitResume(c *gin.Context) {
 	}
 }
 
+// 获取个人履历
+
 // 提交意见评价
 func (controller *ApplyController) ApplySubmitOpinion(c *gin.Context) {
 	var applyOpinionVO vo.ApplyOpinionVO
@@ -90,6 +100,8 @@ func (controller *ApplyController) ApplySubmitOpinion(c *gin.Context) {
 		}))
 	}
 }
+
+// 获取意见评价
 
 // 获取申请记录
 func (controller *ApplyController) ApplyRecords(c *gin.Context) {

@@ -16,14 +16,12 @@ import (
 	"time"
 )
 
-
 // 文件相关
 type FileService struct {
-
 }
 
 // 删除某id对应的文件
-func removeFileListById(id primitive.ObjectID, path string) {
+func removeFileListById(prefix string, path string) {
 	dir, err := os.Open(path)
 	if err != nil {
 		return
@@ -32,7 +30,7 @@ func removeFileListById(id primitive.ObjectID, path string) {
 	list, err := dir.Readdir(-1)
 	for _, f := range list {
 		fileName := f.Name()
-		if strings.HasPrefix(fileName, id.Hex()) {
+		if strings.HasPrefix(fileName, prefix) {
 			os.Remove(filepath.Join(path, fileName))
 		}
 	}
@@ -64,23 +62,24 @@ func (service *FileService) DownloadFile(c *gin.Context, path string, name strin
 	}
 	defer file.Close()
 	// 设置头
-	c.Header("Content-Disposition", "attachment; filename=" + url.QueryEscape(name))
+	c.Header("Content-Disposition", "attachment; filename="+url.QueryEscape(name))
 	c.Header("Content-Type", "application/octet-stream")
 	http.ServeContent(c.Writer, c.Request, name, time.Now(), file)
 	return response.BuildResponse(map[int]interface{}{})
 }
 
-// 上传文件，通用函数
-func (service *FileService) uploadFile(c *gin.Context, userID primitive.ObjectID, path string) response.Response {
+// 上传文件
+func (service *FileService) UploadRecommendFile(c *gin.Context, submitID string) response.Response {
 	file, err := c.FormFile("file")
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorUpload,
 		})
 	}
-	fileName := userID.Hex() + "_" + file.Filename
-	fullPath := filepath.Join(path, fileName)
-	removeFileListById(userID, path)
+	fileName := submitID + "_" + file.Filename
+	fullPath := filepath.Join(conf.SystemConfig.File.Upload.Recommend.Path, fileName)
+	// 删除旧文件
+	removeFileListById(submitID, conf.SystemConfig.File.Upload.Recommend.Path)
 	err = SaveUploadedFile(file, fullPath)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
@@ -90,11 +89,6 @@ func (service *FileService) uploadFile(c *gin.Context, userID primitive.ObjectID
 	return response.BuildResponse(map[int]interface{}{
 		response.Data: fullPath,
 	})
-}
-
-// 上传文件
-func (service *FileService) UploadRecommendFile(c *gin.Context, userID primitive.ObjectID) response.Response {
-	return service.uploadFile(c, userID, conf.SystemConfig.File.Upload.Recommend.Path)
 }
 
 // 上传照片
@@ -108,7 +102,7 @@ func (service *FileService) UploadPhoto(c *gin.Context, userID primitive.ObjectI
 	path := conf.SystemConfig.File.Upload.Picture.Path
 	fileName := userID.Hex() + "_" + file.Filename
 	fullPath := filepath.Join(path, fileName)
-	removeFileListById(userID, path)
+	removeFileListById(userID.Hex(), path)
 	err = SaveUploadedFile(file, fullPath)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
@@ -119,5 +113,3 @@ func (service *FileService) UploadPhoto(c *gin.Context, userID primitive.ObjectI
 		response.Data: "./static/" + fileName,
 	})
 }
-
-

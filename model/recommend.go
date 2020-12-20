@@ -10,38 +10,38 @@ import (
 )
 
 // 单位信息
-type RecommendCompany struct {
-	vo.RecommendCompanyVO	`bson:"recommendCompany"`
-	UserID 		primitive.ObjectID 	`bson:"userID"`		// 当前用户id
+type RecommendDepartment struct {
+	vo.RecommendDepartmentVO `bson:"recommendDepartment"`
+	UserID                   primitive.ObjectID `bson:"userID"` // 当前用户id
 }
 
 // 专家推荐
 type RecommendExpert struct {
-	vo.RecommendExpertVO	`bson:"recommendExpert"`
-	UserID 	primitive.ObjectID	`json:"-" bson:"userID"`	// 当前用户id
-	SubmitID 		string 	`json:"-" bson:"submitID"`							// 本次提交id
+	vo.RecommendExpertVO `bson:"recommendExpert"`
+	UserID               primitive.ObjectID `json:"-" bson:"userID"`   // 当前用户id
+	SubmitID             string             `json:"-" bson:"submitID"` // 本次提交id
 }
 
-// 根据某次提交id获得单位名
-func GetRecommendCompanyNameBySubmitID(submitID string) (string, error) {
+// 根据某次提交id获得提交记录
+func GetRecommendRecordBySubmitID(submitID string) (*Record, error) {
 	var record Record
 	if err := db.DBConn.DB.Collection("records").
 		FindOne(db.DBConn.Context, bson.D{{"_id", submitID}}).
 		Decode(&record); err != nil {
-		return "", err
+		return nil, err
 	}
-	return record.CompanyName, nil
+	return &record, nil
 }
 
 // 根据某次提交id获得单位信息
-func GetRecommendCompanyByName(name string) (*RecommendCompany, error) {
-	var recommendCompany RecommendCompany
-	if err := db.DBConn.DB.Collection("companies").
-		FindOne(db.DBConn.Context, bson.D{{"recommendCompany.name", name}}).
-		Decode(&recommendCompany); err != nil {
+func GetRecommendDepartmentByName(name string) (*RecommendDepartment, error) {
+	var recommendDepartment RecommendDepartment
+	if err := db.DBConn.DB.Collection("departments").
+		FindOne(db.DBConn.Context, bson.D{{"recommendDepartment.name", name}}).
+		Decode(&recommendDepartment); err != nil {
 		return nil, err
 	}
-	return &recommendCompany, nil
+	return &recommendDepartment, nil
 }
 
 // 根据某次提交id获得专家推荐信息
@@ -63,14 +63,13 @@ func GetRecommendExpertsBySubmitID(submitID string) ([]*RecommendExpert, error) 
 }
 
 // 保存或更新单位信息
-func SaveOrUpdateRecommendCompany(recommendCompany *RecommendCompany) error {
-	if _, err := db.DBConn.DB.Collection("companies").
-		UpdateOne(db.DBConn.Context, bson.D{{"recommendCompany.name", recommendCompany.Name}}, bson.D{{"$set", bson.D{{"userID", recommendCompany.UserID}, {"recommendCompany", recommendCompany.RecommendCompanyVO}}}}, options.Update().SetUpsert(true)); err != nil {
+func SaveOrUpdateRecommendDepartment(recommendDepartment *RecommendDepartment) error {
+	if _, err := db.DBConn.DB.Collection("departments").
+		UpdateOne(db.DBConn.Context, bson.D{{"recommendDepartment.name", recommendDepartment.Name}}, bson.D{{"$set", bson.D{{"userID", recommendDepartment.UserID}, {"recommendDepartment", recommendDepartment.RecommendDepartmentVO}}}}, options.Update().SetUpsert(true)); err != nil {
 		return err
 	}
 	return nil
 }
-
 
 // 根据提交id删除专家
 func DeleteRecommendExpertsBySubmitID(submitID string) error {
@@ -89,6 +88,3 @@ func SaveRecommendExperts(recommendExperts []interface{}) error {
 	}
 	return nil
 }
-
-
-

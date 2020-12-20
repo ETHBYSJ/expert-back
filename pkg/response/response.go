@@ -7,13 +7,13 @@ import (
 const (
 	Code = 1
 	Data = 2
-	Msg = 3
+	Msg  = 3
 )
 
 type Response struct {
-	Code 	int 		`json:"code"`
-	Data 	interface{} `json:"data,omitempty"`
-	Msg 	string 		`json:"msg"`
+	Code int         `json:"code"`
+	Data interface{} `json:"data,omitempty"`
+	Msg  string      `json:"msg"`
 }
 
 // 构造返回体
@@ -34,14 +34,12 @@ func BuildResponse(m map[int]interface{}) Response {
 		return Response{
 			Code: code,
 			Data: m[Data],
-			Msg: msg,
+			Msg:  msg,
 		}
 	} else {
 		return Response{
 			Code: code,
-			Msg: msg,
+			Msg:  msg,
 		}
 	}
 }
-
-

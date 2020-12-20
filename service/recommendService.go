@@ -19,20 +19,17 @@ type RecommendService struct {
 	fileService FileService
 }
 
-
-
-
 // 根据提交id获得信息
 func (service *RecommendService) RecommendGetSubmit(c *gin.Context, recommendGetSubmitVO *vo.RecommendGetSubmitVO) response.Response {
 	submitID := recommendGetSubmitVO.SubmitID
 	// 获得单位名
-	name, err := model.GetRecommendCompanyNameBySubmitID(submitID)
+	record, err := model.GetRecommendRecordBySubmitID(submitID)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommendSubmitGet,
 		})
 	}
-	recommendCompany, err := model.GetRecommendCompanyByName(name)
+	recommendDepartment, err := model.GetRecommendDepartmentByName(record.DepartmentName)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommendSubmitGet,
@@ -49,15 +46,15 @@ func (service *RecommendService) RecommendGetSubmit(c *gin.Context, recommendGet
 		expertList = append(expertList, expert.RecommendExpertVO)
 	}
 	recommend := vo.RecommendVO{
-		RecommendCompanyVO: recommendCompany.RecommendCompanyVO,
-		List:               expertList,
-		SubmitID:           submitID,
+		RecommendDepartmentVO: recommendDepartment.RecommendDepartmentVO,
+		List:                  expertList,
+		SubmitID:              submitID,
+		File:                  record.File,
 	}
 	return response.BuildResponse(map[int]interface{}{
 		response.Data: recommend,
 	})
 }
-
 
 // 提交专家推荐信息
 func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo.RecommendVO) response.Response {
@@ -72,8 +69,8 @@ func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo
 		Type:           model.Recommend,
 		UserID:         profile.Id,
 		SubmitID:       recommendVO.SubmitID,
-		CompanyName:    recommendVO.RecommendCompanyVO.Name,
-		CommonRecordVO: vo.CommonRecordVO{Title: recommendVO.RecommendCompanyVO.Name + "单位的推荐", Status: "reviewing", Timestamp: time.Now().Unix()},
+		DepartmentName: recommendVO.RecommendDepartmentVO.Name,
+		CommonRecordVO: vo.CommonRecordVO{Title: recommendVO.RecommendDepartmentVO.Name + "单位的推荐", Status: "reviewing", Timestamp: time.Now().Unix()},
 	}
 	err = model.SaveOrUpdateRecord(record)
 	if err != nil {
@@ -82,11 +79,11 @@ func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo
 		})
 	}
 	// 保存或更新单位信息
-	recommendCompany := &model.RecommendCompany{
-		RecommendCompanyVO: recommendVO.RecommendCompanyVO,
-		UserID: profile.Id,
+	recommendDepartment := &model.RecommendDepartment{
+		RecommendDepartmentVO: recommendVO.RecommendDepartmentVO,
+		UserID:                profile.Id,
 	}
-	err = model.SaveOrUpdateRecommendCompany(recommendCompany)
+	err = model.SaveOrUpdateRecommendDepartment(recommendDepartment)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommend,
@@ -105,8 +102,8 @@ func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo
 	for i := 0; i < len(list); i++ {
 		experts[i] = &model.RecommendExpert{
 			RecommendExpertVO: list[i],
-			UserID: profile.Id,
-			SubmitID: recommendVO.SubmitID,
+			UserID:            profile.Id,
+			SubmitID:          recommendVO.SubmitID,
 		}
 	}
 	err = model.SaveRecommendExperts(experts)
@@ -118,7 +115,6 @@ func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo
 	return response.BuildResponse(map[int]interface{}{})
 }
 
-
 // 下载推荐表
 func (service *RecommendService) RecommendDownload(c *gin.Context) response.Response {
 	res := service.fileService.DownloadFile(c, conf.SystemConfig.File.Download.Recommend.Path, conf.SystemConfig.File.Download.Recommend.Name)
@@ -126,14 +122,8 @@ func (service *RecommendService) RecommendDownload(c *gin.Context) response.Resp
 }
 
 // 上传推荐表
-func (service *RecommendService) RecommendUpload(c *gin.Context) response.Response {
-	profile, err := util.GinGetAccountProfile(c)
-	if err != nil {
-		return response.BuildResponse(map[int]interface{}{
-			response.Code: e.ErrorGetAccountProfile,
-		})
-	}
-	res := service.fileService.UploadRecommendFile(c, profile.Id)
+func (service *RecommendService) RecommendUpload(c *gin.Context, recommendUploadVO *vo.RecommendUploadVO) response.Response {
+	res := service.fileService.UploadRecommendFile(c, recommendUploadVO.SubmitID)
 	if res.Code != e.Success {
 		return res
 	}
@@ -194,11 +184,11 @@ func ConstructExpertList(table *document.Table) []*vo.RecommendExpertVO {
 		if err != nil {
 			continue
 		}
-		qualification, err := docx.GetCell(table, i, 4)
+		edu, err := docx.GetCell(table, i, 4)
 		if err != nil {
 			continue
 		}
-		company, err := docx.GetCell(table, i, 5)
+		dept, err := docx.GetCell(table, i, 5)
 		if err != nil {
 			continue
 		}
@@ -206,7 +196,7 @@ func ConstructExpertList(table *document.Table) []*vo.RecommendExpertVO {
 		if err != nil {
 			continue
 		}
-		duty, err := docx.GetCell(table, i, 7)
+		post, err := docx.GetCell(table, i, 7)
 		if err != nil {
 			continue
 		}
@@ -227,20 +217,19 @@ func ConstructExpertList(table *document.Table) []*vo.RecommendExpertVO {
 			continue
 		}
 		expert := vo.RecommendExpertVO{
-			Name:          name,
-			Sex:           sex,
-			Age:           ageVal,
-			Qualification: qualification,
-			Title:         title,
-			Major:         major,
-			Company:       company,
-			Duty:          duty,
-			Phone:         phone,
-			Mobile:        mobile,
-			Email:         email,
+			Name:   name,
+			Sex:    sex,
+			Age:    ageVal,
+			Edu:    edu,
+			Title:  title,
+			Major:  major,
+			Dept:   dept,
+			Post:   post,
+			Phone:  phone,
+			Mobile: mobile,
+			Email:  email,
 		}
 		expertList = append(expertList, &expert)
 	}
 	return expertList
 }
-

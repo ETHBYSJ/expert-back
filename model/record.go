@@ -9,29 +9,29 @@ import (
 )
 
 const (
-	Apply = 1
+	Apply     = 1
 	Recommend = 2
 )
 
 // 专家推荐记录/专家申请记录
 type Record struct {
-	Type 		int 				`json:"-" bson:"type"`
-	UserID 		primitive.ObjectID	`json:"-" bson:"userID"`
-	SubmitID	string 				`json:"-" bson:"_id"`
-	CompanyName	string 				`json:"-" bson:"companyName"`
-	vo.CommonRecordVO				`bson:"commonRecord"`
+	Type              int                `json:"-" bson:"type"`
+	UserID            primitive.ObjectID `json:"-" bson:"userID"`
+	SubmitID          string             `json:"submitID" bson:"_id"`
+	DepartmentName    string             `json:"-" bson:"departmentName"`
+	File              string             `json:"-" bson:"file"`
+	vo.CommonRecordVO `bson:"commonRecord"`
 }
 
 // 保存或更新
 func SaveOrUpdateRecord(record *Record) error {
-	recordDoc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"_id", record.SubmitID}, {"companyName", record.CompanyName}, {"commonRecord", record.CommonRecordVO}}
+	recordDoc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"_id", record.SubmitID}, {"departmentName", record.DepartmentName}, {"file", record.File}, {"commonRecord", record.CommonRecordVO}}
 	if _, err := db.DBConn.DB.Collection("records").
 		UpdateOne(db.DBConn.Context, bson.D{{"_id", record.SubmitID}}, bson.D{{"$set", recordDoc}}, options.Update().SetUpsert(true)); err != nil {
 		return err
 	}
 	return nil
 }
-
 
 // 获得记录，通用函数
 func getRecordsByUserID(userID primitive.ObjectID, recordType int) ([]*Record, error) {
@@ -60,6 +60,3 @@ func GetRecommendRecordsByUserID(userID primitive.ObjectID) ([]*Record, error) {
 func GetApplyRecordsByUserID(userID primitive.ObjectID) ([]*Record, error) {
 	return getRecordsByUserID(userID, Apply)
 }
-
-
-
