@@ -22,8 +22,9 @@ type ApplyExpert struct {
 // 根据用户id获得申请信息
 func GetApplyByUserID(userID primitive.ObjectID) (*ApplyExpert, error) {
 	var applyExpert ApplyExpert
+	filter := bson.D{{"userID", userID}}
 	if err := db.DBConn.DB.Collection("apply").
-		FindOne(db.DBConn.Context, bson.D{{"userID", userID}}).
+		FindOne(db.DBConn.Context, filter).
 		Decode(&applyExpert); err != nil {
 		return nil, err
 	}
@@ -52,8 +53,10 @@ func createApply(userID primitive.ObjectID) error {
 
 // 通用函数
 func saveApplyInfo(userID primitive.ObjectID, key string, value interface{}) error {
+	filter := bson.D{{"userID", userID}}
+	update := bson.D{{"$set", bson.D{{key, value}}}}
 	if _, err := db.DBConn.DB.Collection("apply").
-		UpdateOne(db.DBConn.Context, bson.D{{"userID", userID}}, bson.D{{"$set", bson.D{{key, value}}}}); err != nil {
+		UpdateOne(db.DBConn.Context, filter, update); err != nil {
 		return err
 	}
 	return nil

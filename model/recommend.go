@@ -26,8 +26,9 @@ type RecommendExpert struct {
 // 根据某次提交id获得提交记录
 func GetRecommendRecordBySubmitID(submitID string) (*Record, error) {
 	var record Record
+	filter := bson.D{{"submitID", submitID}, {"type", Recommend}}
 	if err := db.DBConn.DB.Collection("records").
-		FindOne(db.DBConn.Context, bson.D{{"submitID", submitID}, {"type", Recommend}}).
+		FindOne(db.DBConn.Context, filter).
 		Decode(&record); err != nil {
 		return nil, err
 	}
@@ -37,8 +38,9 @@ func GetRecommendRecordBySubmitID(submitID string) (*Record, error) {
 // 根据某次提交id获得单位信息
 func GetRecommendDepartmentByName(name string) (*RecommendDepartment, error) {
 	var recommendDepartment RecommendDepartment
+	filter := bson.D{{"recommendDepartment.name", name}}
 	if err := db.DBConn.DB.Collection("departments").
-		FindOne(db.DBConn.Context, bson.D{{"recommendDepartment.name", name}}).
+		FindOne(db.DBConn.Context, filter).
 		Decode(&recommendDepartment); err != nil {
 		return nil, err
 	}
@@ -48,7 +50,8 @@ func GetRecommendDepartmentByName(name string) (*RecommendDepartment, error) {
 // 根据某次提交id获得专家推荐信息
 func GetRecommendExpertsBySubmitID(submitID string) ([]*RecommendExpert, error) {
 	experts := []*RecommendExpert{}
-	cursor, err := db.DBConn.DB.Collection("experts").Find(db.DBConn.Context, bson.D{{"submitID", submitID}})
+	filter := bson.D{{"submitID", submitID}}
+	cursor, err := db.DBConn.DB.Collection("experts").Find(db.DBConn.Context, filter)
 	if err != nil {
 		return experts, err
 	}
@@ -66,8 +69,11 @@ func GetRecommendExpertsBySubmitID(submitID string) ([]*RecommendExpert, error) 
 
 // 保存或更新单位信息
 func SaveOrUpdateRecommendDepartment(recommendDepartment *RecommendDepartment) error {
+	filter := bson.D{{"recommendDepartment.name", recommendDepartment.Name}}
+	update := bson.D{{"$set", bson.D{{"userID", recommendDepartment.UserID}, {"recommendDepartment", recommendDepartment.RecommendDepartmentVO}}}}
+	opts := options.Update().SetUpsert(true)
 	if _, err := db.DBConn.DB.Collection("departments").
-		UpdateOne(db.DBConn.Context, bson.D{{"recommendDepartment.name", recommendDepartment.Name}}, bson.D{{"$set", bson.D{{"userID", recommendDepartment.UserID}, {"recommendDepartment", recommendDepartment.RecommendDepartmentVO}}}}, options.Update().SetUpsert(true)); err != nil {
+		UpdateOne(db.DBConn.Context, filter, update, opts); err != nil {
 		return err
 	}
 	return nil
@@ -75,8 +81,9 @@ func SaveOrUpdateRecommendDepartment(recommendDepartment *RecommendDepartment) e
 
 // 根据提交id删除专家
 func DeleteRecommendExpertsBySubmitID(submitID string) error {
+	filter := bson.D{{"submitID", submitID}}
 	if _, err := db.DBConn.DB.Collection("experts").
-		DeleteMany(db.DBConn.Context, bson.D{{"submitID", submitID}}); err != nil {
+		DeleteMany(db.DBConn.Context, filter); err != nil {
 		return err
 	}
 	return nil

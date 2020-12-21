@@ -24,9 +24,11 @@ type Record struct {
 
 // Type UserID SubmitID Name CommonRecordVO
 func SaveOrUpdateRecommendRecordInfo(record *Record) error {
-	doc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"submitID", record.SubmitID}, {"name", record.Name}, {"commonRecord", record.CommonRecordVO}}
+	filter := bson.D{{"submitID", record.SubmitID}, {"type", Recommend}}
+	update := bson.D{{"$set", bson.D{{"type", record.Type}, {"userID", record.UserID}, {"submitID", record.SubmitID}, {"name", record.Name}, {"commonRecord", record.CommonRecordVO}}}}
+	opts := options.Update().SetUpsert(true)
 	if _, err := db.DBConn.DB.Collection("records").
-		UpdateOne(db.DBConn.Context, bson.D{{"submitID", record.SubmitID}, {"type", Recommend}}, bson.D{{"$set", doc}}, options.Update().SetUpsert(true)); err != nil {
+		UpdateOne(db.DBConn.Context, filter, update, opts); err != nil {
 		return err
 	}
 	return nil
@@ -34,9 +36,11 @@ func SaveOrUpdateRecommendRecordInfo(record *Record) error {
 
 // Type UserID SubmitID Name CommonRecordVO
 func SaveOrUpdateApplyRecordInfo(record *Record) error {
-	doc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"submitID", record.SubmitID}, {"name", record.Name}, {"commonRecord", record.CommonRecordVO}}
+	filter := bson.D{{"userID", record.UserID}, {"type", Apply}}
+	update := bson.D{{"$set", bson.D{{"type", record.Type}, {"userID", record.UserID}, {"submitID", record.SubmitID}, {"name", record.Name}, {"commonRecord", record.CommonRecordVO}}}}
+	opts := options.Update().SetUpsert(true)
 	if _, err := db.DBConn.DB.Collection("records").
-		UpdateOne(db.DBConn.Context, bson.D{{"userID", record.UserID}, {"type", Apply}}, bson.D{{"$set", doc}}, options.Update().SetUpsert(true)); err != nil {
+		UpdateOne(db.DBConn.Context, filter, update, opts); err != nil {
 		return err
 	}
 	return nil
@@ -45,7 +49,10 @@ func SaveOrUpdateApplyRecordInfo(record *Record) error {
 // 获得记录，通用函数
 func getRecordsByUserID(userID primitive.ObjectID, recordType int) ([]*Record, error) {
 	records := []*Record{}
-	cursor, err := db.DBConn.DB.Collection("records").Find(db.DBConn.Context, bson.D{{"userID", userID}, {"type", recordType}})
+	filter := bson.D{{"userID", userID}, {"type", recordType}}
+	opts := options.Find().SetSort(bson.D{{"commonRecord.timestamp", -1}})
+	// 按时间降序
+	cursor, err := db.DBConn.DB.Collection("records").Find(db.DBConn.Context, filter, opts)
 	if err != nil {
 		return records, err
 	}
