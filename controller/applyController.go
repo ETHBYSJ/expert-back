@@ -33,11 +33,13 @@ func (controller *ApplyController) ApplyUploadPhoto(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+/*
 // 创建专家申请
 func (controller *ApplyController) ApplyCreate(c *gin.Context) {
 	res := controller.applyService.ApplyCreate(c)
 	c.JSON(http.StatusOK, res)
 }
+*/
 
 // 提交基本信息
 func (controller *ApplyController) ApplySubmitBase(c *gin.Context) {

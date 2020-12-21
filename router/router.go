@@ -36,8 +36,8 @@ func InitRouter() *gin.Engine {
 			apply.GET("/download", applyController.ApplyDownload)
 			// 上传照片
 			apply.POST("/uploadPhoto", applyController.ApplyUploadPhoto)
-			// 提交申请信息
-			apply.GET("/create", applyController.ApplyCreate)
+			// 创建申请信息
+			// apply.GET("/create", applyController.ApplyCreate)
 			// 提交基本信息
 			apply.POST("/submitBase", applyController.ApplySubmitBase)
 			// 获取基本信息

@@ -87,17 +87,17 @@ func (service *FileService) UploadApplyFile(c *gin.Context, userID primitive.Obj
 			response.Code: e.ErrorUpload,
 		})
 	}
-	// 保存记录
-	record := &model.Record{
-		Type: model.Apply,
-		UserID: userID,
+	// 保存文件记录
+	fileRecord := &model.FileRecord{
+		Type:     model.ApplyFile,
+		UserID:   userID,
 		SubmitID: "",
-		File: file.Filename,
+		Name:     file.Filename,
 	}
-	err = model.SaveOrUpdateRecordBaseInfo(record)
+	err = model.SaveOrUpdateFileRecordByUserID(fileRecord)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
-			response.Code: e.ErrorApplyRecordSet,
+			response.Code: e.ErrorApplyFileRecordSet,
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{
@@ -123,17 +123,17 @@ func (service *FileService) UploadRecommendFile(c *gin.Context, submitID string,
 			response.Code: e.ErrorUpload,
 		})
 	}
-	// 保存记录
-	record := &model.Record{
-		Type: model.Recommend,
-		UserID: userID,
+	// 保存文件记录
+	fileRecord := &model.FileRecord{
+		Type:     model.RecommendFile,
+		UserID:   userID,
 		SubmitID: submitID,
-		File: file.Filename,
+		Name:     file.Filename,
 	}
-	err = model.SaveOrUpdateRecordBaseInfo(record)
+	err = model.SaveOrUpdateFileRecordBySubmitID(fileRecord)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
-			response.Code: e.ErrorRecommendRecordSet,
+			response.Code: e.ErrorRecommendFileRecordSet,
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{

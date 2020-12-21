@@ -15,30 +15,28 @@ const (
 
 // 专家推荐记录/专家申请记录
 type Record struct {
-	Type              int                `json:"-" bson:"type"`
-	UserID            primitive.ObjectID `json:"-" bson:"userID"`
-	SubmitID          string             `json:"submitID" bson:"_id"`
-	Name    		  string             `json:"-" bson:"name"`			// 代表单位名(专家推荐表)或人名(专家申请表)
-	File              string             `json:"-" bson:"file"`
+	Type              int                `json:"-" bson:"type"`				// 记录类型
+	UserID            primitive.ObjectID `json:"-" bson:"userID"`			// 用户id
+	SubmitID          string             `json:"submitID" bson:"submitID"`	// 提交id
+	Name    		  string             `json:"-" bson:"name"`				// 代表单位名(专家推荐表)或人名(专家申请表)
 	vo.CommonRecordVO `bson:"commonRecord"`
 }
 
-
-// Type UserID SubmitID File
-func SaveOrUpdateRecordBaseInfo(record *Record) error {
-	recordDoc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"_id", record.SubmitID}, {"file", record.File}}
+// Type UserID SubmitID Name CommonRecordVO
+func SaveOrUpdateRecommendRecordInfo(record *Record) error {
+	doc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"submitID", record.SubmitID}, {"name", record.Name}, {"commonRecord", record.CommonRecordVO}}
 	if _, err := db.DBConn.DB.Collection("records").
-		UpdateOne(db.DBConn.Context, bson.D{{"_id", record.SubmitID}}, bson.D{{"$set", recordDoc}}, options.Update().SetUpsert(true)); err != nil {
+		UpdateOne(db.DBConn.Context, bson.D{{"submitID", record.SubmitID}, {"type", Recommend}}, bson.D{{"$set", doc}}, options.Update().SetUpsert(true)); err != nil {
 		return err
 	}
 	return nil
 }
 
-// Type UserID SubmitID DepartmentName CommonRecordVO
-func SaveOrUpdateRecordInfo(record *Record) error {
-	recordDoc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"_id", record.SubmitID}, {"name", record.Name}, {"commonRecord", record.CommonRecordVO}}
+// Type UserID SubmitID Name CommonRecordVO
+func SaveOrUpdateApplyRecordInfo(record *Record) error {
+	doc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"submitID", record.SubmitID}, {"name", record.Name}, {"commonRecord", record.CommonRecordVO}}
 	if _, err := db.DBConn.DB.Collection("records").
-		UpdateOne(db.DBConn.Context, bson.D{{"_id", record.SubmitID}}, bson.D{{"$set", recordDoc}}, options.Update().SetUpsert(true)); err != nil {
+		UpdateOne(db.DBConn.Context, bson.D{{"userID", record.UserID}, {"type", Apply}}, bson.D{{"$set", doc}}, options.Update().SetUpsert(true)); err != nil {
 		return err
 	}
 	return nil

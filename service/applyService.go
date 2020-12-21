@@ -6,7 +6,6 @@ import (
 	"expert-back/pkg/conf"
 	"expert-back/pkg/e"
 	"expert-back/pkg/response"
-	util2 "expert-back/pkg/util"
 	"expert-back/util"
 	"expert-back/vo"
 	"github.com/gin-gonic/gin"
@@ -47,6 +46,7 @@ func (service *ApplyService) ApplyUploadPhoto(c *gin.Context) response.Response 
 	return res
 }
 
+/*
 // 创建专家申请
 func (service *ApplyService) ApplyCreate(c *gin.Context) response.Response {
 	profile, err := util.GinGetAccountProfile(c)
@@ -63,6 +63,7 @@ func (service *ApplyService) ApplyCreate(c *gin.Context) response.Response {
 	}
 	return response.BuildResponse(map[int]interface{}{})
 }
+*/
 
 // 提交基本信息
 func (service *ApplyService) ApplySubmitBase(c *gin.Context, applyBaseVO *vo.ApplyBaseVO) response.Response {
@@ -178,7 +179,6 @@ func (service *ApplyService) ApplySubmitResume(c *gin.Context, applyResumeVO *vo
 		})
 	}
 	if err := model.SaveApplyResume(profile.Id, applyResumeVO); err != nil {
-		util2.Log().Info("submit resume error %v", err)
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorApplyUpdate,
 		})
@@ -231,9 +231,9 @@ func (service *ApplyService) ApplySubmitOpinion(c *gin.Context, applyOpinionVO *
 		UserID:         profile.Id,
 		SubmitID:       "",
 		Name: 			applyBase.Name,
-		CommonRecordVO: vo.CommonRecordVO{Title: applyBase.Name + "单位的推荐", Status: "reviewing", Timestamp: time.Now().Unix()},
+		CommonRecordVO: vo.CommonRecordVO{Title: applyBase.Name + "的专家申请", Status: "reviewing", Timestamp: time.Now().Unix()},
 	}
-	err = model.SaveOrUpdateRecordInfo(record)
+	err = model.SaveOrUpdateApplyRecordInfo(record)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommendRecordSet,

@@ -3,6 +3,7 @@ package model
 
 import (
 	"expert-back/db"
+	"expert-back/pkg/util"
 	"expert-back/vo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -26,7 +27,7 @@ type RecommendExpert struct {
 func GetRecommendRecordBySubmitID(submitID string) (*Record, error) {
 	var record Record
 	if err := db.DBConn.DB.Collection("records").
-		FindOne(db.DBConn.Context, bson.D{{"_id", submitID}}).
+		FindOne(db.DBConn.Context, bson.D{{"submitID", submitID}, {"type", Recommend}}).
 		Decode(&record); err != nil {
 		return nil, err
 	}
@@ -53,6 +54,7 @@ func GetRecommendExpertsBySubmitID(submitID string) ([]*RecommendExpert, error) 
 	}
 	defer cursor.Close(db.DBConn.Context)
 	for cursor.Next(db.DBConn.Context) {
+		util.Log().Info("aaa")
 		var expert RecommendExpert
 		if err := cursor.Decode(&expert); err != nil {
 			return experts, err

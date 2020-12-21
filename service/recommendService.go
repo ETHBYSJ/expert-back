@@ -7,6 +7,7 @@ import (
 	"expert-back/pkg/docx"
 	"expert-back/pkg/e"
 	"expert-back/pkg/response"
+	util2 "expert-back/pkg/util"
 	"expert-back/util"
 	"expert-back/vo"
 	"github.com/gin-gonic/gin"
@@ -21,21 +22,30 @@ type RecommendService struct {
 // 根据提交id获得信息
 func (service *RecommendService) RecommendGetSubmit(c *gin.Context, recommendGetSubmitVO *vo.RecommendGetSubmitVO) response.Response {
 	submitID := recommendGetSubmitVO.SubmitID
+	fileName := ""
+	// 获得文件名
+	fileRecord, err := model.GetFileRecordBySubmitID(submitID)
+	if err == nil {
+		fileName = fileRecord.Name
+	}
 	// 获得单位名
 	record, err := model.GetRecommendRecordBySubmitID(submitID)
 	if err != nil {
+		util2.Log().Info("err1 %v", err)
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommendSubmitGet,
 		})
 	}
 	recommendDepartment, err := model.GetRecommendDepartmentByName(record.Name)
 	if err != nil {
+		util2.Log().Info("err2 %v", err)
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommendSubmitGet,
 		})
 	}
 	recommendExperts, err := model.GetRecommendExpertsBySubmitID(submitID)
 	if err != nil {
+		util2.Log().Info("err3 %v", err)
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommendSubmitGet,
 		})
@@ -50,7 +60,7 @@ func (service *RecommendService) RecommendGetSubmit(c *gin.Context, recommendGet
 			List:                  expertList,
 			SubmitID:              submitID,
 		},
-		File:                  record.File,
+		File:                  fileName,
 	}
 	return response.BuildResponse(map[int]interface{}{
 		response.Data: recommend,
@@ -107,7 +117,7 @@ func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo
 		Name: 			recommendVO.RecommendDepartmentVO.Name,
 		CommonRecordVO: vo.CommonRecordVO{Title: recommendVO.RecommendDepartmentVO.Name + "单位的推荐", Status: "reviewing", Timestamp: time.Now().Unix()},
 	}
-	err = model.SaveOrUpdateRecordInfo(record)
+	err = model.SaveOrUpdateRecommendRecordInfo(record)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommendRecordSet,
