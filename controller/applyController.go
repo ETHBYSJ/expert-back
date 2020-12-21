@@ -13,9 +13,23 @@ type ApplyController struct {
 	applyService service.ApplyService
 }
 
-// 上传照片
+// 上传申请表
 func (controller *ApplyController) ApplyUpload(c *gin.Context) {
 	res := controller.applyService.ApplyUpload(c)
+	c.JSON(http.StatusOK, res)
+}
+
+// 下载申请表
+func (controller *ApplyController) ApplyDownload(c *gin.Context) {
+	res := controller.applyService.ApplyDownload(c)
+	if res.Code != e.Success {
+		c.JSON(http.StatusOK, res)
+	}
+}
+
+// 上传照片
+func (controller *ApplyController) ApplyUploadPhoto(c *gin.Context) {
+	res := controller.applyService.ApplyUploadPhoto(c)
 	c.JSON(http.StatusOK, res)
 }
 

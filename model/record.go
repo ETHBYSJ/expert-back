@@ -18,7 +18,7 @@ type Record struct {
 	Type              int                `json:"-" bson:"type"`
 	UserID            primitive.ObjectID `json:"-" bson:"userID"`
 	SubmitID          string             `json:"submitID" bson:"_id"`
-	DepartmentName    string             `json:"-" bson:"departmentName"`
+	Name    		  string             `json:"-" bson:"name"`			// 代表单位名(专家推荐表)或人名(专家申请表)
 	File              string             `json:"-" bson:"file"`
 	vo.CommonRecordVO `bson:"commonRecord"`
 }
@@ -36,7 +36,7 @@ func SaveOrUpdateRecordBaseInfo(record *Record) error {
 
 // Type UserID SubmitID DepartmentName CommonRecordVO
 func SaveOrUpdateRecordInfo(record *Record) error {
-	recordDoc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"_id", record.SubmitID}, {"departmentName", record.DepartmentName}, {"commonRecord", record.CommonRecordVO}}
+	recordDoc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"_id", record.SubmitID}, {"name", record.Name}, {"commonRecord", record.CommonRecordVO}}
 	if _, err := db.DBConn.DB.Collection("records").
 		UpdateOne(db.DBConn.Context, bson.D{{"_id", record.SubmitID}}, bson.D{{"$set", recordDoc}}, options.Update().SetUpsert(true)); err != nil {
 		return err

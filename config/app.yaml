@@ -5,9 +5,14 @@ file:
     recommend:
       path: ./static/download/recommend.docx
       name: 长三角区域教育评价变革协作联盟专家库成员推荐汇总表.docx
+    apply:
+      path: ./static/download/apply.docx
+      name: 长三角区域教育评价变革协作联盟专家库成员申请表.docx
   upload:
     recommend:
       path: ./static/upload/recommend
+    apply:
+      path: ./static/upload/apply
     picture:
       path: ./static/upload/picture
 database:

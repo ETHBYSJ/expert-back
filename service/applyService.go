@@ -3,20 +3,40 @@ package service
 
 import (
 	"expert-back/model"
+	"expert-back/pkg/conf"
 	"expert-back/pkg/e"
 	"expert-back/pkg/response"
 	util2 "expert-back/pkg/util"
 	"expert-back/util"
 	"expert-back/vo"
 	"github.com/gin-gonic/gin"
+	"time"
 )
 
 type ApplyService struct {
 	fileService FileService
 }
 
-// 上传照片
+// 上传申请表
 func (service *ApplyService) ApplyUpload(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	res := service.fileService.UploadApplyFile(c, profile.Id)
+	return res
+}
+
+// 下载申请表
+func (service *ApplyService) ApplyDownload(c *gin.Context) response.Response {
+	res := service.fileService.DownloadFile(c, conf.SystemConfig.File.Download.Apply.Path, conf.SystemConfig.File.Download.Apply.Name)
+	return res
+}
+
+// 上传照片
+func (service *ApplyService) ApplyUploadPhoto(c *gin.Context) response.Response {
 	profile, err := util.GinGetAccountProfile(c)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
@@ -196,6 +216,27 @@ func (service *ApplyService) ApplySubmitOpinion(c *gin.Context, applyOpinionVO *
 	if err := model.SaveApplyOpinion(profile.Id, applyOpinionVO); err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorApplyUpdate,
+		})
+	}
+	// 需要获得姓名
+	applyBase, err := model.GetApplyBase(profile.Id)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorApplyGet,
+		})
+	}
+	// 保存记录
+	record := &model.Record{
+		Type:           model.Apply,
+		UserID:         profile.Id,
+		SubmitID:       "",
+		Name: 			applyBase.Name,
+		CommonRecordVO: vo.CommonRecordVO{Title: applyBase.Name + "单位的推荐", Status: "reviewing", Timestamp: time.Now().Unix()},
+	}
+	err = model.SaveOrUpdateRecordInfo(record)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorRecommendRecordSet,
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{})

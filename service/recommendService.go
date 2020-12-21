@@ -28,7 +28,7 @@ func (service *RecommendService) RecommendGetSubmit(c *gin.Context, recommendGet
 			response.Code: e.ErrorRecommendSubmitGet,
 		})
 	}
-	recommendDepartment, err := model.GetRecommendDepartmentByName(record.DepartmentName)
+	recommendDepartment, err := model.GetRecommendDepartmentByName(record.Name)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommendSubmitGet,
@@ -65,20 +65,6 @@ func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo
 			response.Code: e.ErrorGetAccountProfile,
 		})
 	}
-	// 保存记录
-	record := &model.Record{
-		Type:           model.Recommend,
-		UserID:         profile.Id,
-		SubmitID:       recommendVO.SubmitID,
-		DepartmentName: recommendVO.RecommendDepartmentVO.Name,
-		CommonRecordVO: vo.CommonRecordVO{Title: recommendVO.RecommendDepartmentVO.Name + "单位的推荐", Status: "reviewing", Timestamp: time.Now().Unix()},
-	}
-	err = model.SaveOrUpdateRecordInfo(record)
-	if err != nil {
-		return response.BuildResponse(map[int]interface{}{
-			response.Code: e.ErrorRecommendRecordSet,
-		})
-	}
 	// 保存或更新单位信息
 	recommendDepartment := &model.RecommendDepartment{
 		RecommendDepartmentVO: recommendVO.RecommendDepartmentVO,
@@ -111,6 +97,20 @@ func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorRecommend,
+		})
+	}
+	// 保存记录
+	record := &model.Record{
+		Type:           model.Recommend,
+		UserID:         profile.Id,
+		SubmitID:       recommendVO.SubmitID,
+		Name: 			recommendVO.RecommendDepartmentVO.Name,
+		CommonRecordVO: vo.CommonRecordVO{Title: recommendVO.RecommendDepartmentVO.Name + "单位的推荐", Status: "reviewing", Timestamp: time.Now().Unix()},
+	}
+	err = model.SaveOrUpdateRecordInfo(record)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorRecommendRecordSet,
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{})

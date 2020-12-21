@@ -22,9 +22,16 @@ type SystemConf struct {
 				Path string
 				Name string
 			}
+			Apply struct {
+				Path string
+				Name string
+			}
 		}
 		Upload struct {
 			Recommend struct {
+				Path string
+			}
+			Apply struct {
 				Path string
 			}
 			Picture struct {

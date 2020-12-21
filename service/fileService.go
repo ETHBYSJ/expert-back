@@ -69,7 +69,43 @@ func (service *FileService) DownloadFile(c *gin.Context, path string, name strin
 	return response.BuildResponse(map[int]interface{}{})
 }
 
-// 上传文件
+// 上传申请表
+func (service *FileService) UploadApplyFile(c *gin.Context, userID primitive.ObjectID) response.Response {
+	file, err := c.FormFile("file")
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorUpload,
+		})
+	}
+	fileName := userID.Hex() + "_" + file.Filename
+	fullPath := filepath.Join(conf.SystemConfig.File.Upload.Apply.Path, fileName)
+	// 删除旧文件
+	removeFileListById(userID.Hex(), conf.SystemConfig.File.Upload.Apply.Path)
+	err = SaveUploadedFile(file, fullPath)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorUpload,
+		})
+	}
+	// 保存记录
+	record := &model.Record{
+		Type: model.Apply,
+		UserID: userID,
+		SubmitID: "",
+		File: file.Filename,
+	}
+	err = model.SaveOrUpdateRecordBaseInfo(record)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorApplyRecordSet,
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.Data: fullPath,
+	})
+}
+
+// 上传推荐表
 func (service *FileService) UploadRecommendFile(c *gin.Context, submitID string, userID primitive.ObjectID) response.Response {
 	file, err := c.FormFile("file")
 	if err != nil {

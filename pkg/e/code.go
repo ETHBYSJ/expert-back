@@ -21,6 +21,7 @@ const (
 	ErrorApplyUpdate     = 40002
 	ErrorApplyRecordsGet = 40003
 	ErrorApplyGet = 40004
+	ErrorApplyRecordSet = 40005
 	// 其他错误码
 	ErrorGetAccountProfile = 50001
 )

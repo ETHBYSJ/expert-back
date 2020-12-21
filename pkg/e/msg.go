@@ -21,6 +21,7 @@ var MsgMap = map[int]string{
 	ErrorApplyUpdate:     "更新申请信息失败",
 	ErrorApplyRecordsGet: "获取申请记录失败",
 	ErrorApplyGet: "获取申请信息失败",
+	ErrorApplyRecordSet: "更新申请记录失败",
 	// 其他错误码
 	ErrorGetAccountProfile: "获取用户信息失败",
 }
