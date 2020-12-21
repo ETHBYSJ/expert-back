@@ -33,21 +33,31 @@ func InitRouter() *gin.Engine {
 			// 上传申请表
 
 			// 下载申请表
-
+			apply.GET("/download")
 			// 上传照片
 			apply.POST("/uploadPhoto", applyController.ApplyUpload)
 			// 提交申请信息
 			apply.GET("/create", applyController.ApplyCreate)
 			// 提交基本信息
 			apply.POST("/submitBase", applyController.ApplySubmitBase)
+			// 获取基本信息
+			apply.GET("/getBase", applyController.ApplyGetBase)
 			// 提交专业类别
 			apply.POST("/submitMajor", applyController.ApplySubmitMajor)
+			// 获取专业类别
+			apply.GET("/getMajor", applyController.ApplyGetMajor)
 			// 提交专攻领域
 			apply.POST("/submitResearchField", applyController.ApplySubmitResearchField)
+			// 获取专攻领域
+			apply.GET("/getResearchField", applyController.ApplyGetResearchField)
 			// 提交个人履历
 			apply.POST("/submitResume", applyController.ApplySubmitResume)
+			// 获取个人履历
+			apply.GET("/getResume", applyController.ApplyGetResume)
 			// 提交意见评价
 			apply.POST("/submitOpinion", applyController.ApplySubmitOpinion)
+			// 获取意见评价
+			apply.GET("/getOpinion", applyController.ApplyGetOpinion)
 			// 获取推荐记录
 			apply.GET("/records", applyController.ApplyRecords)
 		}

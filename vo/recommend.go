@@ -12,7 +12,7 @@ type RecommendDepartmentVO struct {
 type RecommendExpertVO struct {
 	Name   string `json:"name" bson:"name"`     // 姓名
 	Sex    string `json:"sex" bson:"sex"`       // 性别
-	Age    int    `json:"age" bson:"age"`       // 年龄
+	Age    string `json:"age" bson:"age"`       // 年龄
 	Edu    string `json:"edu" bson:"edu"`       // 学历
 	Title  string `json:"title" bson:"title"`   // 职称
 	Major  string `json:"major" bson:"major"`   // 专业或学科
@@ -28,7 +28,12 @@ type RecommendVO struct {
 	RecommendDepartmentVO `json:"department"`
 	List                  []RecommendExpertVO `json:"list"`
 	SubmitID              string              `json:"submitID"`
-	File                  string              `json:"file"`
+}
+
+// 用于返回给前端
+type RecommendRetVO struct {
+	RecommendVO
+	File 	string 	`json:"file"`
 }
 
 // 解析后的结果

@@ -40,7 +40,8 @@ func (controller *ApplyController) ApplySubmitBase(c *gin.Context) {
 
 // 获取基本信息
 func (controller *ApplyController) ApplyGetBase(c *gin.Context) {
-
+	res := controller.applyService.ApplyGetBase(c)
+	c.JSON(http.StatusOK, res)
 }
 
 // 提交专业类别
@@ -57,6 +58,10 @@ func (controller *ApplyController) ApplySubmitMajor(c *gin.Context) {
 }
 
 // 获取专业类别
+func (controller *ApplyController) ApplyGetMajor(c *gin.Context) {
+	res := controller.applyService.ApplyGetMajor(c)
+	c.JSON(http.StatusOK, res)
+}
 
 // 提交专攻领域
 func (controller *ApplyController) ApplySubmitResearchField(c *gin.Context) {
@@ -72,6 +77,10 @@ func (controller *ApplyController) ApplySubmitResearchField(c *gin.Context) {
 }
 
 // 获取专攻领域
+func (controller *ApplyController) ApplyGetResearchField(c *gin.Context) {
+	res := controller.applyService.ApplyGetResearchField(c)
+	c.JSON(http.StatusOK, res)
+}
 
 // 提交个人履历
 func (controller *ApplyController) ApplySubmitResume(c *gin.Context) {
@@ -87,6 +96,10 @@ func (controller *ApplyController) ApplySubmitResume(c *gin.Context) {
 }
 
 // 获取个人履历
+func (controller *ApplyController) ApplyGetResume(c *gin.Context) {
+	res := controller.applyService.ApplyGetResume(c)
+	c.JSON(http.StatusOK, res)
+}
 
 // 提交意见评价
 func (controller *ApplyController) ApplySubmitOpinion(c *gin.Context) {
@@ -102,6 +115,10 @@ func (controller *ApplyController) ApplySubmitOpinion(c *gin.Context) {
 }
 
 // 获取意见评价
+func (controller *ApplyController) ApplyGetOpinion(c *gin.Context) {
+	res := controller.applyService.ApplyGetOpinion(c)
+	c.JSON(http.StatusOK, res)
+}
 
 // 获取申请记录
 func (controller *ApplyController) ApplyRecords(c *gin.Context) {

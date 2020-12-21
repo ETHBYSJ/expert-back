@@ -60,6 +60,25 @@ func (service *ApplyService) ApplySubmitBase(c *gin.Context, applyBaseVO *vo.App
 	return response.BuildResponse(map[int]interface{}{})
 }
 
+// 获取基本信息
+func (service *ApplyService) ApplyGetBase(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	applyBase, err := model.GetApplyBase(profile.Id)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorApplyGet,
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.Data: applyBase,
+	})
+}
+
 // 提交专业类别
 func (service *ApplyService) ApplySubmitMajor(c *gin.Context, applyMajorVO *vo.ApplyMajorVO) response.Response {
 	profile, err := util.GinGetAccountProfile(c)
@@ -76,6 +95,25 @@ func (service *ApplyService) ApplySubmitMajor(c *gin.Context, applyMajorVO *vo.A
 	return response.BuildResponse(map[int]interface{}{})
 }
 
+// 获取专业类别
+func (service *ApplyService) ApplyGetMajor(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	applyMajor, err := model.GetApplyMajor(profile.Id)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorApplyGet,
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.Data: applyMajor,
+	})
+}
+
 // 提交专攻领域
 func (service *ApplyService) ApplySubmitResearchField(c *gin.Context, applyResearchFieldVO *vo.ApplyResearchFieldVO) response.Response {
 	profile, err := util.GinGetAccountProfile(c)
@@ -90,6 +128,25 @@ func (service *ApplyService) ApplySubmitResearchField(c *gin.Context, applyResea
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{})
+}
+
+// 获取专攻领域
+func (service *ApplyService) ApplyGetResearchField(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	applyResearchField, err := model.GetApplyResearchField(profile.Id)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorApplyGet,
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.Data: applyResearchField,
+	})
 }
 
 // 提交个人履历
@@ -109,6 +166,25 @@ func (service *ApplyService) ApplySubmitResume(c *gin.Context, applyResumeVO *vo
 	return response.BuildResponse(map[int]interface{}{})
 }
 
+// 获取个人履历
+func (service *ApplyService) ApplyGetResume(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	applyResume, err := model.GetApplyResume(profile.Id)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorApplyGet,
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.Data: applyResume,
+	})
+}
+
 // 提交意见评价
 func (service *ApplyService) ApplySubmitOpinion(c *gin.Context, applyOpinionVO *vo.ApplyOpinionVO) response.Response {
 	profile, err := util.GinGetAccountProfile(c)
@@ -123,6 +199,25 @@ func (service *ApplyService) ApplySubmitOpinion(c *gin.Context, applyOpinionVO *
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{})
+}
+
+// 获取意见评价
+func (service *ApplyService) ApplyGetOpinion(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	applyOpinion, err := model.GetApplyOpinion(profile.Id)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorApplyGet,
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.Data: applyOpinion,
+	})
 }
 
 // 获取申请记录

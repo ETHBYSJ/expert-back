@@ -1,6 +1,7 @@
 package service
 
 import (
+	"expert-back/model"
 	"expert-back/pkg/conf"
 	"expert-back/pkg/e"
 	"expert-back/pkg/response"
@@ -69,7 +70,7 @@ func (service *FileService) DownloadFile(c *gin.Context, path string, name strin
 }
 
 // 上传文件
-func (service *FileService) UploadRecommendFile(c *gin.Context, submitID string) response.Response {
+func (service *FileService) UploadRecommendFile(c *gin.Context, submitID string, userID primitive.ObjectID) response.Response {
 	file, err := c.FormFile("file")
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
@@ -84,6 +85,19 @@ func (service *FileService) UploadRecommendFile(c *gin.Context, submitID string)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorUpload,
+		})
+	}
+	// 保存记录
+	record := &model.Record{
+		Type: model.Recommend,
+		UserID: userID,
+		SubmitID: submitID,
+		File: file.Filename,
+	}
+	err = model.SaveOrUpdateRecordBaseInfo(record)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorRecommendRecordSet,
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{

@@ -11,7 +11,6 @@ import (
 	"expert-back/vo"
 	"github.com/gin-gonic/gin"
 	"github.com/unidoc/unioffice/document"
-	"strconv"
 	"time"
 )
 
@@ -45,10 +44,12 @@ func (service *RecommendService) RecommendGetSubmit(c *gin.Context, recommendGet
 	for _, expert := range recommendExperts {
 		expertList = append(expertList, expert.RecommendExpertVO)
 	}
-	recommend := vo.RecommendVO{
-		RecommendDepartmentVO: recommendDepartment.RecommendDepartmentVO,
-		List:                  expertList,
-		SubmitID:              submitID,
+	recommend := vo.RecommendRetVO{
+		RecommendVO: vo.RecommendVO{
+			RecommendDepartmentVO: recommendDepartment.RecommendDepartmentVO,
+			List:                  expertList,
+			SubmitID:              submitID,
+		},
 		File:                  record.File,
 	}
 	return response.BuildResponse(map[int]interface{}{
@@ -72,10 +73,10 @@ func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo
 		DepartmentName: recommendVO.RecommendDepartmentVO.Name,
 		CommonRecordVO: vo.CommonRecordVO{Title: recommendVO.RecommendDepartmentVO.Name + "单位的推荐", Status: "reviewing", Timestamp: time.Now().Unix()},
 	}
-	err = model.SaveOrUpdateRecord(record)
+	err = model.SaveOrUpdateRecordInfo(record)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
-			response.Code: e.ErrorRecommend,
+			response.Code: e.ErrorRecommendRecordSet,
 		})
 	}
 	// 保存或更新单位信息
@@ -123,7 +124,15 @@ func (service *RecommendService) RecommendDownload(c *gin.Context) response.Resp
 
 // 上传推荐表
 func (service *RecommendService) RecommendUpload(c *gin.Context, recommendUploadVO *vo.RecommendUploadVO) response.Response {
-	res := service.fileService.UploadRecommendFile(c, recommendUploadVO.SubmitID)
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	res := service.fileService.UploadRecommendFile(c, recommendUploadVO.SubmitID, profile.Id)
+	return res
+	/*
 	if res.Code != e.Success {
 		return res
 	}
@@ -139,6 +148,7 @@ func (service *RecommendService) RecommendUpload(c *gin.Context, recommendUpload
 	return response.BuildResponse(map[int]interface{}{
 		response.Data: expertList,
 	})
+	*/
 }
 
 //获取推荐记录
@@ -180,7 +190,6 @@ func ConstructExpertList(table *document.Table) []*vo.RecommendExpertVO {
 		if err != nil {
 			continue
 		}
-		ageVal, err := strconv.Atoi(age)
 		if err != nil {
 			continue
 		}
@@ -219,7 +228,7 @@ func ConstructExpertList(table *document.Table) []*vo.RecommendExpertVO {
 		expert := vo.RecommendExpertVO{
 			Name:   name,
 			Sex:    sex,
-			Age:    ageVal,
+			Age:    age,
 			Edu:    edu,
 			Title:  title,
 			Major:  major,

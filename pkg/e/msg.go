@@ -15,10 +15,12 @@ var MsgMap = map[int]string{
 	ErrorRecommendGetExperts: "获取推荐专家信息失败",
 	ErrorRecommendRecordsGet: "获取推荐记录失败",
 	ErrorRecommendSubmitGet:  "获取提交信息失败",
+	ErrorRecommendRecordSet: "更新推荐记录失败",
 	// 具体错误码：专家申请
 	ErrorApplyCreate:     "创建专家申请失败",
 	ErrorApplyUpdate:     "更新申请信息失败",
 	ErrorApplyRecordsGet: "获取申请记录失败",
+	ErrorApplyGet: "获取申请信息失败",
 	// 其他错误码
 	ErrorGetAccountProfile: "获取用户信息失败",
 }

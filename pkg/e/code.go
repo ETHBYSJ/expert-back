@@ -15,10 +15,12 @@ const (
 	ErrorRecommendGetExperts = 30003
 	ErrorRecommendRecordsGet = 30004
 	ErrorRecommendSubmitGet  = 30005
+	ErrorRecommendRecordSet = 30006
 	// 具体错误码：专家申请
 	ErrorApplyCreate     = 40001
 	ErrorApplyUpdate     = 40002
 	ErrorApplyRecordsGet = 40003
+	ErrorApplyGet = 40004
 	// 其他错误码
 	ErrorGetAccountProfile = 50001
 )

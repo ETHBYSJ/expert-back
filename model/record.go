@@ -23,9 +23,20 @@ type Record struct {
 	vo.CommonRecordVO `bson:"commonRecord"`
 }
 
-// 保存或更新
-func SaveOrUpdateRecord(record *Record) error {
-	recordDoc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"_id", record.SubmitID}, {"departmentName", record.DepartmentName}, {"file", record.File}, {"commonRecord", record.CommonRecordVO}}
+
+// Type UserID SubmitID File
+func SaveOrUpdateRecordBaseInfo(record *Record) error {
+	recordDoc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"_id", record.SubmitID}, {"file", record.File}}
+	if _, err := db.DBConn.DB.Collection("records").
+		UpdateOne(db.DBConn.Context, bson.D{{"_id", record.SubmitID}}, bson.D{{"$set", recordDoc}}, options.Update().SetUpsert(true)); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Type UserID SubmitID DepartmentName CommonRecordVO
+func SaveOrUpdateRecordInfo(record *Record) error {
+	recordDoc := bson.D{{"type", record.Type}, {"userID", record.UserID}, {"_id", record.SubmitID}, {"departmentName", record.DepartmentName}, {"commonRecord", record.CommonRecordVO}}
 	if _, err := db.DBConn.DB.Collection("records").
 		UpdateOne(db.DBConn.Context, bson.D{{"_id", record.SubmitID}}, bson.D{{"$set", recordDoc}}, options.Update().SetUpsert(true)); err != nil {
 		return err
