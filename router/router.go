@@ -7,6 +7,7 @@ import (
 )
 
 func InitRouter() *gin.Engine {
+	searchController := controller.SearchController{}
 	recommendController := controller.RecommendController{}
 	commonController := controller.CommonController{}
 	applyController := controller.ApplyController{}
@@ -15,6 +16,11 @@ func InitRouter() *gin.Engine {
 	{
 		v1.GET("/cookie", commonController.SetCookie)
 		v1.GET("/profile", commonController.GetAccountProfile)
+		search := v1.Group("/search")
+		{
+			// 查询
+			search.POST("/doSearch", searchController.SearchExperts)
+		}
 		recommend := v1.Group("/recommend")
 		{
 			// 提交推荐信息

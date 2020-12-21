@@ -11,6 +11,8 @@ import (
 type CommonController struct {
 }
 
+// TODO 审核接口
+
 // 设置cookie
 func (controller *CommonController) SetCookie(c *gin.Context) {
 	c.SetCookie("iadmin", "e415c0ff-ae61-48f2-9208-d4335b8d1792", 3*24*3600, "/", "", false, true)

@@ -42,6 +42,8 @@ func Init(connection string, dbName string) {
 	_ = DBConn.DB.CreateCollection(DBConn.Context, "apply")
 	// 文件信息
 	_ = DBConn.DB.CreateCollection(DBConn.Context, "files")
+	// 倒排索引
+	_ = DBConn.DB.CreateCollection(DBConn.Context, "indexes")
 	// 创建索引
 	// CreateIndex("users", "openId")
 }

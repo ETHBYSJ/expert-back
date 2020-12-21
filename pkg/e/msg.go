@@ -26,6 +26,9 @@ var MsgMap = map[int]string{
 	ErrorApplyRecordSet: "更新申请记录失败",
 	ErrorApplyFileRecordSet: "更新申请文件记录失败",
 	ErrorApplyFileRecordGet: "获取申请文件记录失败",
+	ErrorApplySaveInvertedIndex: "保存倒排索引错误",
+	// 具体错误码：搜索
+	ErrorSearch: "搜索出错",
 	// 其他错误码
 	ErrorGetAccountProfile: "获取用户信息失败",
 }

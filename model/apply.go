@@ -3,7 +3,6 @@ package model
 
 import (
 	"expert-back/db"
-	"expert-back/pkg/util"
 	"expert-back/vo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -11,12 +10,38 @@ import (
 
 // 专家申请
 type ApplyExpert struct {
-	vo.ApplyBaseVO          `bson:"applyBase"`          // 基本信息
-	vo.ApplyMajorVO         `bson:"applyMajor"`         // 专业类别
-	vo.ApplyResearchFieldVO `bson:"applyResearchField"` // 专攻领域
-	vo.ApplyResumeVO        `bson:"applyResume"`        // 个人履历
-	vo.ApplyOpinionVO       `bson:"applyOpinion"`       // 意见评价
-	UserID                  primitive.ObjectID          `bson:"userID"` // 用户id
+	vo.ApplyBaseVO          `json:"applyBase" bson:"applyBase"`          			// 基本信息
+	vo.ApplyMajorVO         `json:"applyMajor" bson:"applyMajor"`         			// 专业类别
+	vo.ApplyResearchFieldVO `json:"applyResearchField" bson:"applyResearchField"` 	// 专攻领域
+	vo.ApplyResumeVO        `json:"applyResume" bson:"applyResume"`        			// 个人履历
+	vo.ApplyOpinionVO       `json:"applyOpinion" bson:"applyOpinion"`       		// 意见评价
+	UserID                  primitive.ObjectID          `json:"-" bson:"userID"` 	// 用户id
+}
+
+// 根据专家名获得申请信息
+// TODO 考虑审核状态
+func GetValidExpertsByName(name string) ([]*ApplyExpert, error) {
+	experts := []*ApplyExpert{}
+	filter := bson.D{{"applyBase.name", name}}
+	cursor, err := db.DBConn.DB.Collection("apply").Find(db.DBConn.Context, filter)
+	if err != nil {
+		return experts, err
+	}
+	for cursor.Next(db.DBConn.Context) {
+		var expert ApplyExpert
+		if err := cursor.Decode(&expert); err != nil {
+			return experts, err
+		}
+		records, err := GetApplyRecordsByUserID(expert.UserID)
+		if err != nil {
+			continue
+		}
+		// 检查审核状态
+		if records[0].Status == "accepted" {
+			experts = append(experts, &expert)
+		}
+	}
+	return experts, nil
 }
 
 // 根据用户id获得申请信息
@@ -36,7 +61,6 @@ func createApply(userID primitive.ObjectID) error {
 	apply, err := GetApplyByUserID(userID)
 	// 没有记录，新建
 	if err != nil {
-		util.Log().Info("model create apply %v", err)
 		apply = &ApplyExpert{
 			UserID: userID,
 		}

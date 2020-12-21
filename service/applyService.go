@@ -6,6 +6,7 @@ import (
 	"expert-back/pkg/conf"
 	"expert-back/pkg/e"
 	"expert-back/pkg/response"
+	util2 "expert-back/pkg/util"
 	"expert-back/util"
 	"expert-back/vo"
 	"github.com/gin-gonic/gin"
@@ -146,6 +147,17 @@ func (service *ApplyService) ApplySubmitResearchField(c *gin.Context, applyResea
 	if err := model.SaveApplyResearchField(profile.Id, applyResearchFieldVO); err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorApplyUpdate,
+		})
+	}
+	// 保存倒排索引信息
+	labels := []string{}
+	labels = append(labels, applyResearchFieldVO.MajorLabels...)
+	labels = append(labels, applyResearchFieldVO.ResearchLabels...)
+	util2.Log().Info("labels: %v", labels)
+	err = model.SaveOrUpdateInvertedIndex(labels, profile.Id)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorApplySaveInvertedIndex,
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{})

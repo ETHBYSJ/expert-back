@@ -26,6 +26,9 @@ const (
 	ErrorApplyRecordSet = 40005
 	ErrorApplyFileRecordSet = 40006
 	ErrorApplyFileRecordGet = 40007
+	ErrorApplySaveInvertedIndex = 40008
+	// 具体错误码：搜索
+	ErrorSearch = 50001
 	// 其他错误码
-	ErrorGetAccountProfile = 50001
+	ErrorGetAccountProfile = 60001
 )
