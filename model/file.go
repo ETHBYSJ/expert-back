@@ -9,7 +9,8 @@ import (
 
 const (
 	ApplyFile = 1		// 专家申请上传文件
-	RecommendFile = 2 	// 专家推荐上传文件
+	ApplyPhoto = 2		// 专家申请上传照片
+	RecommendFile = 3 	// 专家推荐上传文件
 )
 
 // 上传文件相关
@@ -17,13 +18,13 @@ type FileRecord struct {
 	Type 		int 				`bson:"type"`
 	UserID 		primitive.ObjectID	`bson:"userID"`
 	SubmitID    string             	`bson:"submitID"`
-	Name 		string 				`bson:"name"`
+	Name 		string 				`bson:"name"`		// 文件名或图片url
 }
 
 // 根据用户id获得文件记录
-func GetFileRecordByUserID(userID primitive.ObjectID) (*FileRecord, error) {
+func GetFileRecordByUserIDAndType(userID primitive.ObjectID, fileType int) (*FileRecord, error) {
 	var fileRecord FileRecord
-	filter := bson.D{{"userID", userID}}
+	filter := bson.D{{"userID", userID}, {"type", fileType}}
 	if err := db.DBConn.DB.Collection("files").
 		FindOne(db.DBConn.Context, filter).
 		Decode(&fileRecord); err != nil {
@@ -32,7 +33,7 @@ func GetFileRecordByUserID(userID primitive.ObjectID) (*FileRecord, error) {
 	return &fileRecord, nil
 }
 
-// 根据提交id获得问卷记录
+// 根据提交id获得文件记录
 func GetFileRecordBySubmitID(submitID string) (*FileRecord, error) {
 	var fileRecord FileRecord
 	filter := bson.D{{"submitID", submitID}}
@@ -43,6 +44,8 @@ func GetFileRecordBySubmitID(submitID string) (*FileRecord, error) {
 	}
 	return &fileRecord, nil
 }
+
+
 
 // 根据提交id更新文件记录
 func SaveOrUpdateFileRecordBySubmitID(fileRecord *FileRecord) error {
@@ -67,4 +70,5 @@ func SaveOrUpdateFileRecordByUserID(fileRecord *FileRecord) error {
 	}
 	return nil
 }
+
 

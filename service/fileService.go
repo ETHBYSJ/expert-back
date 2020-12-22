@@ -143,7 +143,7 @@ func (service *FileService) UploadRecommendFile(c *gin.Context, submitID string,
 
 // 上传照片
 func (service *FileService) UploadPhoto(c *gin.Context, userID primitive.ObjectID) response.Response {
-	file, err := c.FormFile("photo")
+	file, err := c.FormFile("file")
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorUpload,
@@ -159,7 +159,20 @@ func (service *FileService) UploadPhoto(c *gin.Context, userID primitive.ObjectI
 			response.Code: e.ErrorUpload,
 		})
 	}
+	// 保存照片记录
+	photoRecord := &model.FileRecord{
+		Type:     model.ApplyPhoto,
+		UserID:   userID,
+		SubmitID: "",
+		Name:     "/static/" + fileName,
+	}
+	err = model.SaveOrUpdateFileRecordByUserID(photoRecord)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorApplyFileRecordSet,
+		})
+	}
 	return response.BuildResponse(map[int]interface{}{
-		response.Data: "./static/" + fileName,
+		response.Data: "/static/" + fileName,
 	})
 }

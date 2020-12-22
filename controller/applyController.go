@@ -13,6 +13,12 @@ type ApplyController struct {
 	applyService service.ApplyService
 }
 
+// 获得图片url
+func (controller *ApplyController) ApplyPhotoUrl(c *gin.Context) {
+	res := controller.applyService.ApplyPhotoUrl(c)
+	c.JSON(http.StatusOK, res)
+}
+
 // 上传申请表
 func (controller *ApplyController) ApplyUpload(c *gin.Context) {
 	res := controller.applyService.ApplyUpload(c)
@@ -40,6 +46,7 @@ func (controller *ApplyController) ApplyCreate(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 */
+
 
 // 提交基本信息
 func (controller *ApplyController) ApplySubmitBase(c *gin.Context) {

@@ -3,15 +3,42 @@ package controller
 import (
 	"expert-back/pkg/e"
 	"expert-back/pkg/response"
+	"expert-back/service"
 	"expert-back/util"
+	"expert-back/vo"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type CommonController struct {
+	commonService service.CommonService
 }
 
-// TODO 审核接口
+// 审核专家推荐
+func (controller *CommonController) ReviewRecommend(c *gin.Context) {
+	var reviewRecommendVO vo.ReviewRecommendVO
+	if err := c.ShouldBind(&reviewRecommendVO); err == nil {
+		res := controller.commonService.ReviewReCommend(c, &reviewRecommendVO)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{
+			response.Code: e.HttpBadRequest,
+		}))
+	}
+}
+
+// 审核专家申请
+func (controller *CommonController) ReviewApply(c *gin.Context) {
+	var reviewApplyVO vo.ReviewApplyVO
+	if err := c.ShouldBind(&reviewApplyVO); err == nil {
+		res := controller.commonService.ReviewApply(c, &reviewApplyVO)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{
+			response.Code: e.HttpBadRequest,
+		}))
+	}
+}
 
 // 设置cookie
 func (controller *CommonController) SetCookie(c *gin.Context) {

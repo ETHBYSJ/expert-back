@@ -6,7 +6,6 @@ import (
 	"expert-back/pkg/conf"
 	"expert-back/pkg/e"
 	"expert-back/pkg/response"
-	util2 "expert-back/pkg/util"
 	"expert-back/util"
 	"expert-back/vo"
 	"github.com/gin-gonic/gin"
@@ -15,6 +14,25 @@ import (
 
 type ApplyService struct {
 	fileService FileService
+}
+
+// 获得图片url
+func (service *ApplyService) ApplyPhotoUrl(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	photoRecord, err := model.GetFileRecordByUserIDAndType(profile.Id, model.ApplyPhoto)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Data: "",
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.Data: photoRecord.Name,
+	})
 }
 
 // 上传申请表
@@ -136,6 +154,22 @@ func (service *ApplyService) ApplyGetMajor(c *gin.Context) response.Response {
 	})
 }
 
+// 合并标签
+func mergeLabels(majorLabels []string, researchLabels []string) []string {
+	res := []string{}
+	m := make(map[string]int)
+	for _, label := range majorLabels {
+		m[label]++
+	}
+	for _, label := range researchLabels {
+		m[label]++
+	}
+	for label, _ := range m {
+		res = append(res, label)
+	}
+	return res
+}
+
 // 提交专攻领域
 func (service *ApplyService) ApplySubmitResearchField(c *gin.Context, applyResearchFieldVO *vo.ApplyResearchFieldVO) response.Response {
 	profile, err := util.GinGetAccountProfile(c)
@@ -144,21 +178,27 @@ func (service *ApplyService) ApplySubmitResearchField(c *gin.Context, applyResea
 			response.Code: e.ErrorGetAccountProfile,
 		})
 	}
+	oldLabels := []string{}
+	fields, err := model.GetApplyResearchField(profile.Id)
+	if err == nil {
+		oldLabels = mergeLabels(fields.MajorLabels, fields.ResearchLabels)
+	}
 	if err := model.SaveApplyResearchField(profile.Id, applyResearchFieldVO); err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorApplyUpdate,
 		})
 	}
 	// 保存倒排索引信息
-	labels := []string{}
-	labels = append(labels, applyResearchFieldVO.MajorLabels...)
-	labels = append(labels, applyResearchFieldVO.ResearchLabels...)
-	util2.Log().Info("labels: %v", labels)
-	err = model.SaveOrUpdateInvertedIndex(labels, profile.Id)
+	labels := mergeLabels(applyResearchFieldVO.ResearchLabels, applyResearchFieldVO.MajorLabels)
+	err = model.SaveOrUpdateInvertedIndex(oldLabels, labels, profile.Id)
 	if err != nil {
-		return response.BuildResponse(map[int]interface{}{
-			response.Code: e.ErrorApplySaveInvertedIndex,
-		})
+		err = model.TryToRepairInvertedIndex(oldLabels, labels, profile.Id)
+		if err != nil {
+			return response.BuildResponse(map[int]interface{}{
+				response.Code: e.ErrorApplySaveInvertedIndex,
+			})
+		}
+		return response.BuildResponse(map[int]interface{}{})
 	}
 	return response.BuildResponse(map[int]interface{}{})
 }
@@ -243,7 +283,7 @@ func (service *ApplyService) ApplySubmitOpinion(c *gin.Context, applyOpinionVO *
 		UserID:         profile.Id,
 		SubmitID:       "",
 		Name: 			applyBase.Name,
-		CommonRecordVO: vo.CommonRecordVO{Title: applyBase.Name + "的专家申请", Status: "reviewing", Timestamp: time.Now().Unix()},
+		CommonRecordVO: vo.CommonRecordVO{Title: applyBase.Name + "的专家申请", Status: model.ReviewingText, Timestamp: time.Now().Unix()},
 	}
 	err = model.SaveOrUpdateApplyRecordInfo(record)
 	if err != nil {

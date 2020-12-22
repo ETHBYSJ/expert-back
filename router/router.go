@@ -14,8 +14,14 @@ func InitRouter() *gin.Engine {
 	r := gin.Default()
 	v1 := r.Group("/api/v1")
 	{
+		// 设置cookie
 		v1.GET("/cookie", commonController.SetCookie)
+		// 获取用户信息
 		v1.GET("/profile", commonController.GetAccountProfile)
+		// 审核专家推荐
+		v1.POST("/reviewRecommend", commonController.ReviewRecommend)
+		// 审核专家申请
+		v1.POST("/reviewApply", commonController.ReviewApply)
 		search := v1.Group("/search")
 		{
 			// 查询
@@ -42,6 +48,8 @@ func InitRouter() *gin.Engine {
 			apply.GET("/download", applyController.ApplyDownload)
 			// 上传照片
 			apply.POST("/uploadPhoto", applyController.ApplyUploadPhoto)
+			// 获取照片url
+			apply.GET("/photoUrl", applyController.ApplyPhotoUrl)
 			// 创建申请信息
 			// apply.GET("/create", applyController.ApplyCreate)
 			// 提交基本信息

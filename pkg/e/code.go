@@ -31,4 +31,5 @@ const (
 	ErrorSearch = 50001
 	// 其他错误码
 	ErrorGetAccountProfile = 60001
+	ErrorReview = 60002
 )

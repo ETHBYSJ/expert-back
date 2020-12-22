@@ -32,6 +32,7 @@ func GetValidExpertsByName(name string) ([]*ApplyExpert, error) {
 		if err := cursor.Decode(&expert); err != nil {
 			return experts, err
 		}
+		/*
 		records, err := GetApplyRecordsByUserID(expert.UserID)
 		if err != nil {
 			continue
@@ -40,6 +41,8 @@ func GetValidExpertsByName(name string) ([]*ApplyExpert, error) {
 		if records[0].Status == "accepted" {
 			experts = append(experts, &expert)
 		}
+		*/
+		experts = append(experts, &expert)
 	}
 	return experts, nil
 }

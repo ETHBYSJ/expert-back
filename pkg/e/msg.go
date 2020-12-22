@@ -31,6 +31,7 @@ var MsgMap = map[int]string{
 	ErrorSearch: "搜索出错",
 	// 其他错误码
 	ErrorGetAccountProfile: "获取用户信息失败",
+	ErrorReview: "审核失败",
 }
 
 // 获得返回码对应的错误信息
