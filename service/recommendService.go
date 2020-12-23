@@ -161,6 +161,12 @@ func (service *RecommendService) RecommendUpload(c *gin.Context, recommendUpload
 	*/
 }
 
+// 删除推荐文件
+func (service *RecommendService) RecommendDeleteFile(c *gin.Context, recommendDeleteVO *vo.RecommendDeleteVO) response.Response {
+	res := service.fileService.DeleteRecommendFile(c, recommendDeleteVO.SubmitID)
+	return res
+}
+
 //获取推荐记录
 func (service *RecommendService) RecommendRecords(c *gin.Context) response.Response {
 	profile, err := util.GinGetAccountProfile(c)

@@ -73,12 +73,34 @@ func SaveOrUpdateFileRecordByUserID(fileRecord *FileRecord) error {
 }
 */
 
+// 根据用户id和文件类型更新文件记录
 func SaveOrUpdateFileRecordByUserIDAndType(fileRecord *FileRecord) error {
 	filter := bson.D{{"userID", fileRecord.UserID}, {"type", fileRecord.Type}}
 	update := bson.D{{"$set", bson.D{{"type", fileRecord.Type}, {"userID", fileRecord.UserID}, {"submitID", fileRecord.SubmitID}, {"name", fileRecord.Name}}}}
 	opts := options.Update().SetUpsert(true)
 	if _, err := db.DBConn.DB.Collection("files").
 		UpdateOne(db.DBConn.Context, filter, update, opts); err != nil {
+		return err
+	}
+	return nil
+}
+
+// 根据提交id删除文件记录
+func DeleteFileRecordBySubmitID(submitID string) error {
+	filter := bson.D{{"submitID", submitID}}
+	if _, err := db.DBConn.DB.Collection("files").
+		DeleteOne(db.DBConn.Context, filter); err != nil {
+		return err
+	}
+	return nil
+}
+
+
+// 根据用户id和文件类型删除文件记录
+func DeleteFileRecordByUserIDAndType(userID primitive.ObjectID, fileType int) error {
+	filter := bson.D{{"userID", userID}, {"type", fileType}}
+	if _, err := db.DBConn.DB.Collection("files").
+		DeleteOne(db.DBConn.Context, filter); err != nil {
 		return err
 	}
 	return nil

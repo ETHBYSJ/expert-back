@@ -66,6 +66,18 @@ func (service *ApplyService) ApplyUpload(c *gin.Context) response.Response {
 	return res
 }
 
+// 删除申请表
+func (service *ApplyService) ApplyDeleteFile(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	res := service.fileService.DeleteApplyFile(c, profile.Id)
+	return res
+}
+
 // 下载申请表
 func (service *ApplyService) ApplyDownload(c *gin.Context) response.Response {
 	res := service.fileService.DownloadFile(c, conf.SystemConfig.File.Download.Apply.Path, conf.SystemConfig.File.Download.Apply.Name)
@@ -81,6 +93,18 @@ func (service *ApplyService) ApplyUploadPhoto(c *gin.Context) response.Response 
 		})
 	}
 	res := service.fileService.UploadPhoto(c, profile.Id)
+	return res
+}
+
+// 删除照片
+func (service *ApplyService) ApplyDeletePhoto(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	res := service.fileService.DeletePhoto(c, profile.Id)
 	return res
 }
 

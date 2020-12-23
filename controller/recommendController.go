@@ -61,6 +61,19 @@ func (controller *RecommendController) RecommendUpload(c *gin.Context) {
 	}
 }
 
+// 删除专家推荐文件
+func (controller *RecommendController) RecommendDeleteFile(c *gin.Context) {
+	var recommendDeleteVO vo.RecommendDeleteVO
+	if err := c.ShouldBindQuery(&recommendDeleteVO); err == nil {
+		res := controller.recommendService.RecommendDeleteFile(c, &recommendDeleteVO)
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusOK, response.BuildResponse(map[int]interface{}{
+			response.Code: e.HttpBadRequest,
+		}))
+	}
+}
+
 // 获取推荐记录
 func (controller *RecommendController) RecommendRecords(c *gin.Context) {
 	res := controller.recommendService.RecommendRecords(c)

@@ -50,3 +50,8 @@ type RecommendGetSubmitVO struct {
 type RecommendUploadVO struct {
 	SubmitID string `form:"submitID"`
 }
+
+// 删除文件
+type RecommendDeleteVO struct {
+	SubmitID string `form:"submitID"`
+}

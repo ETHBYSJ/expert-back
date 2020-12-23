@@ -33,6 +33,8 @@ func InitRouter() *gin.Engine {
 			recommend.POST("/commit", recommendController.RecommendSubmit)
 			// 上传推荐表
 			recommend.POST("/upload", recommendController.RecommendUpload)
+			// 删除推荐表
+			recommend.GET("/deleteFile", recommendController.RecommendDeleteFile)
 			// 下载推荐表
 			recommend.GET("/download", recommendController.RecommendDownload)
 			// 根据提交id获取信息
@@ -46,10 +48,14 @@ func InitRouter() *gin.Engine {
 			apply.GET("/fileName", applyController.ApplyFileName)
 			// 上传申请表
 			apply.POST("/upload", applyController.ApplyUpload)
+			// 删除申请表
+			apply.GET("/deleteFile", applyController.ApplyDeleteFile)
 			// 下载申请表
 			apply.GET("/download", applyController.ApplyDownload)
 			// 上传照片
 			apply.POST("/uploadPhoto", applyController.ApplyUploadPhoto)
+			// 删除照片
+			apply.GET("/deletePhoto", applyController.ApplyDeletePhoto)
 			// 获取照片url
 			apply.GET("/photoUrl", applyController.ApplyPhotoUrl)
 			// 创建申请信息

@@ -31,6 +31,12 @@ func (controller *ApplyController) ApplyUpload(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+// 删除申请表
+func (controller *ApplyController) ApplyDeleteFile(c *gin.Context) {
+	res := controller.applyService.ApplyDeleteFile(c)
+	c.JSON(http.StatusOK, res)
+}
+
 // 下载申请表
 func (controller *ApplyController) ApplyDownload(c *gin.Context) {
 	res := controller.applyService.ApplyDownload(c)
@@ -42,6 +48,12 @@ func (controller *ApplyController) ApplyDownload(c *gin.Context) {
 // 上传照片
 func (controller *ApplyController) ApplyUploadPhoto(c *gin.Context) {
 	res := controller.applyService.ApplyUploadPhoto(c)
+	c.JSON(http.StatusOK, res)
+}
+
+// 删除照片
+func (controller *ApplyController) ApplyDeletePhoto(c *gin.Context) {
+	res := controller.applyService.ApplyDeletePhoto(c)
 	c.JSON(http.StatusOK, res)
 }
 
