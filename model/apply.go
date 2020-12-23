@@ -60,12 +60,18 @@ func GetApplyByUserID(userID primitive.ObjectID) (*ApplyExpert, error) {
 }
 
 // 创建申请
-func createApply(userID primitive.ObjectID) error {
+func CreateApply(userID primitive.ObjectID) error {
 	apply, err := GetApplyByUserID(userID)
 	// 没有记录，新建
 	if err != nil {
+		// 防止null数组错误
+		applyResearchFieldVO := vo.ApplyResearchFieldVO{
+			MajorLabels:    []string{},
+			ResearchLabels: []string{},
+		}
 		apply = &ApplyExpert{
 			UserID: userID,
+			ApplyResearchFieldVO: applyResearchFieldVO,
 		}
 		// 新建
 		if _, err = db.DBConn.DB.Collection("apply").
@@ -92,9 +98,16 @@ func saveApplyInfo(userID primitive.ObjectID, key string, value interface{}) err
 
 // 保存基本信息
 func SaveApplyBase(userID primitive.ObjectID, applyBaseVO *vo.ApplyBaseVO) error {
-	if err := createApply(userID); err != nil {
+	if err := CreateApply(userID); err != nil {
 		return err
 	}
+	// 照片url
+	record, err := GetFileRecordByUserIDAndType(userID, ApplyPhoto)
+	photo := ""
+	if err == nil {
+		applyBaseVO.Photo = record.Name
+	}
+	applyBaseVO.Photo = photo
 	return saveApplyInfo(userID, "applyBase", applyBaseVO)
 }
 
@@ -104,12 +117,20 @@ func GetApplyBase(userID primitive.ObjectID) (*vo.ApplyBaseVO, error) {
 	if err != nil {
 		return nil, err
 	}
+	if expert.Photo == "" {
+		// 照片url
+		record, err := GetFileRecordByUserIDAndType(userID, ApplyPhoto)
+		if err == nil {
+			expert.Photo = record.Name
+			_ = saveApplyInfo(userID, "applyBase", expert.ApplyBaseVO)
+		}
+	}
 	return &expert.ApplyBaseVO, nil
 }
 
 // 保存专业类别
 func SaveApplyMajor(userID primitive.ObjectID, applyMajorVO *vo.ApplyMajorVO) error {
-	if err := createApply(userID); err != nil {
+	if err := CreateApply(userID); err != nil {
 		return err
 	}
 	return saveApplyInfo(userID, "applyMajor", applyMajorVO)
@@ -126,7 +147,7 @@ func GetApplyMajor(userID primitive.ObjectID) (*vo.ApplyMajorVO, error) {
 
 // 保存专攻领域
 func SaveApplyResearchField(userID primitive.ObjectID, applyResearchFieldVO *vo.ApplyResearchFieldVO) error {
-	if err := createApply(userID); err != nil {
+	if err := CreateApply(userID); err != nil {
 		return err
 	}
 	return saveApplyInfo(userID, "applyResearchField", applyResearchFieldVO)
@@ -143,7 +164,7 @@ func GetApplyResearchField(userID primitive.ObjectID) (*vo.ApplyResearchFieldVO,
 
 // 保存个人履历
 func SaveApplyResume(userID primitive.ObjectID, applyResumeVO *vo.ApplyResumeVO) error {
-	if err := createApply(userID); err != nil {
+	if err := CreateApply(userID); err != nil {
 		return err
 	}
 	return saveApplyInfo(userID, "applyResume", applyResumeVO)
@@ -160,7 +181,7 @@ func GetApplyResume(userID primitive.ObjectID) (*vo.ApplyResumeVO, error) {
 
 // 保存意见评价
 func SaveApplyOpinion(userID primitive.ObjectID, applyOpinionVO *vo.ApplyOpinionVO) error {
-	if err := createApply(userID); err != nil {
+	if err := CreateApply(userID); err != nil {
 		return err
 	}
 	return saveApplyInfo(userID, "applyOpinion", applyOpinionVO)

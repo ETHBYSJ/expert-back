@@ -115,7 +115,7 @@ func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo
 		UserID:         profile.Id,
 		SubmitID:       recommendVO.SubmitID,
 		Name: 			recommendVO.RecommendDepartmentVO.Name,
-		CommonRecordVO: vo.CommonRecordVO{Title: recommendVO.RecommendDepartmentVO.Name + "单位的推荐", Status: model.ReviewingText, Timestamp: time.Now().Unix()},
+		CommonRecordVO: vo.CommonRecordVO{Title: recommendVO.RecommendDepartmentVO.Name + "的推荐", Status: model.ReviewingText, Timestamp: time.Now().Unix()},
 	}
 	err = model.SaveOrUpdateRecommendRecordInfo(record)
 	if err != nil {

@@ -94,7 +94,7 @@ func (service *FileService) UploadApplyFile(c *gin.Context, userID primitive.Obj
 		SubmitID: "",
 		Name:     file.Filename,
 	}
-	err = model.SaveOrUpdateFileRecordByUserID(fileRecord)
+	err = model.SaveOrUpdateFileRecordByUserIDAndType(fileRecord)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorApplyFileRecordSet,
@@ -164,15 +164,15 @@ func (service *FileService) UploadPhoto(c *gin.Context, userID primitive.ObjectI
 		Type:     model.ApplyPhoto,
 		UserID:   userID,
 		SubmitID: "",
-		Name:     "/static/" + fileName,
+		Name:     "/api/v1/static/" + fileName,
 	}
-	err = model.SaveOrUpdateFileRecordByUserID(photoRecord)
+	err = model.SaveOrUpdateFileRecordByUserIDAndType(photoRecord)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
 			response.Code: e.ErrorApplyFileRecordSet,
 		})
 	}
 	return response.BuildResponse(map[int]interface{}{
-		response.Data: "/static/" + fileName,
+		response.Data: "/api/v1/static/" + fileName,
 	})
 }

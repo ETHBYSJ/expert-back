@@ -59,6 +59,7 @@ func SaveOrUpdateFileRecordBySubmitID(fileRecord *FileRecord) error {
 	return nil
 }
 
+/*
 // 根据用户id更新文件记录
 func SaveOrUpdateFileRecordByUserID(fileRecord *FileRecord) error {
 	filter := bson.D{{"userID", fileRecord.UserID}}
@@ -70,5 +71,16 @@ func SaveOrUpdateFileRecordByUserID(fileRecord *FileRecord) error {
 	}
 	return nil
 }
+*/
 
+func SaveOrUpdateFileRecordByUserIDAndType(fileRecord *FileRecord) error {
+	filter := bson.D{{"userID", fileRecord.UserID}, {"type", fileRecord.Type}}
+	update := bson.D{{"$set", bson.D{{"type", fileRecord.Type}, {"userID", fileRecord.UserID}, {"submitID", fileRecord.SubmitID}, {"name", fileRecord.Name}}}}
+	opts := options.Update().SetUpsert(true)
+	if _, err := db.DBConn.DB.Collection("files").
+		UpdateOne(db.DBConn.Context, filter, update, opts); err != nil {
+		return err
+	}
+	return nil
+}
 

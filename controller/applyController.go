@@ -13,6 +13,12 @@ type ApplyController struct {
 	applyService service.ApplyService
 }
 
+// 获得申请文件名
+func (controller *ApplyController) ApplyFileName(c *gin.Context) {
+	res := controller.applyService.ApplyFileName(c)
+	c.JSON(http.StatusOK, res)
+}
+
 // 获得图片url
 func (controller *ApplyController) ApplyPhotoUrl(c *gin.Context) {
 	res := controller.applyService.ApplyPhotoUrl(c)

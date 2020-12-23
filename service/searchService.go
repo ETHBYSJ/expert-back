@@ -31,10 +31,10 @@ func (service *SearchService) SearchExperts(c *gin.Context, searchVO *vo.SearchV
 	res := []*vo.SearchResultVO{}
 	for _, expert := range experts {
 		result := &vo.SearchResultVO{
-			Labels:       append(expert.ResearchLabels, expert.MajorLabels...),
-			Name:         expert.Name,
-			Photo:        expert.Photo,
-			Introduction: expert.Dept + expert.AdminPost,
+			Labels: append(expert.ResearchLabels, expert.MajorLabels...),
+			Name:   expert.Name,
+			Photo:  expert.Photo,
+			Intro: 	expert.Dept + expert.AdminPost,
 		}
 		res = append(res, result)
 	}

@@ -42,6 +42,8 @@ func InitRouter() *gin.Engine {
 		}
 		apply := v1.Group("/apply")
 		{
+			// 获取申请文件名
+			apply.GET("/fileName", applyController.ApplyFileName)
 			// 上传申请表
 			apply.POST("/upload", applyController.ApplyUpload)
 			// 下载申请表
@@ -76,6 +78,6 @@ func InitRouter() *gin.Engine {
 			apply.GET("/records", applyController.ApplyRecords)
 		}
 	}
-	r.StaticFS("/static", http.Dir("./static/upload/picture"))
+	r.StaticFS("api/v1/static", http.Dir("./static/upload/picture"))
 	return r
 }

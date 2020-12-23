@@ -16,6 +16,25 @@ type ApplyService struct {
 	fileService FileService
 }
 
+// 获得申请文件名
+func (service *ApplyService) ApplyFileName(c *gin.Context) response.Response {
+	profile, err := util.GinGetAccountProfile(c)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Code: e.ErrorGetAccountProfile,
+		})
+	}
+	record, err := model.GetFileRecordByUserIDAndType(profile.Id, model.Apply)
+	if err != nil {
+		return response.BuildResponse(map[int]interface{}{
+			response.Data: "",
+		})
+	}
+	return response.BuildResponse(map[int]interface{}{
+		response.Data: record.Name,
+	})
+}
+
 // 获得图片url
 func (service *ApplyService) ApplyPhotoUrl(c *gin.Context) response.Response {
 	profile, err := util.GinGetAccountProfile(c)
@@ -108,6 +127,7 @@ func (service *ApplyService) ApplyGetBase(c *gin.Context) response.Response {
 			response.Code: e.ErrorGetAccountProfile,
 		})
 	}
+	_ = model.CreateApply(profile.Id)
 	applyBase, err := model.GetApplyBase(profile.Id)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
@@ -143,6 +163,7 @@ func (service *ApplyService) ApplyGetMajor(c *gin.Context) response.Response {
 			response.Code: e.ErrorGetAccountProfile,
 		})
 	}
+	_ = model.CreateApply(profile.Id)
 	applyMajor, err := model.GetApplyMajor(profile.Id)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
@@ -211,6 +232,7 @@ func (service *ApplyService) ApplyGetResearchField(c *gin.Context) response.Resp
 			response.Code: e.ErrorGetAccountProfile,
 		})
 	}
+	_ = model.CreateApply(profile.Id)
 	applyResearchField, err := model.GetApplyResearchField(profile.Id)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
@@ -246,6 +268,7 @@ func (service *ApplyService) ApplyGetResume(c *gin.Context) response.Response {
 			response.Code: e.ErrorGetAccountProfile,
 		})
 	}
+	_ = model.CreateApply(profile.Id)
 	applyResume, err := model.GetApplyResume(profile.Id)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
@@ -302,6 +325,7 @@ func (service *ApplyService) ApplyGetOpinion(c *gin.Context) response.Response {
 			response.Code: e.ErrorGetAccountProfile,
 		})
 	}
+	_ = model.CreateApply(profile.Id)
 	applyOpinion, err := model.GetApplyOpinion(profile.Id)
 	if err != nil {
 		return response.BuildResponse(map[int]interface{}{
