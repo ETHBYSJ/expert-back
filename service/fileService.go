@@ -181,6 +181,8 @@ func (service *FileService) UploadPhoto(c *gin.Context, userID primitive.ObjectI
 
 // 删除照片
 func (service *FileService) DeletePhoto(c *gin.Context, userID primitive.ObjectID) response.Response {
+	// 删除数据库中的文件记录
+	_ = model.DeleteFileRecordByUserIDAndType(userID, model.ApplyPhoto)
 	path := conf.SystemConfig.File.Upload.Picture.Path
 	// 删除文件
 	dir, _ := os.Open(path)
@@ -192,13 +194,13 @@ func (service *FileService) DeletePhoto(c *gin.Context, userID primitive.ObjectI
 			_ = os.Remove(filepath.Join(path, fileName))
 		}
 	}
-	// 删除数据库中的文件记录
-	_ = model.DeleteFileRecordByUserIDAndType(userID, model.ApplyPhoto)
 	return response.BuildResponse(map[int]interface{}{})
 }
 
 // 删除推荐文件
 func (service *FileService) DeleteRecommendFile(c *gin.Context, submitID string) response.Response {
+	// 删除数据库中的文件记录
+	_ = model.DeleteFileRecordBySubmitID(submitID)
 	path := conf.SystemConfig.File.Upload.Recommend.Path
 	// 删除文件
 	dir, _ := os.Open(path)
@@ -210,13 +212,13 @@ func (service *FileService) DeleteRecommendFile(c *gin.Context, submitID string)
 			_ = os.Remove(filepath.Join(path, fileName))
 		}
 	}
-	// 删除数据库中的文件记录
-	_ = model.DeleteFileRecordBySubmitID(submitID)
 	return response.BuildResponse(map[int]interface{}{})
 }
 
 // 删除申请文件
 func (service *FileService) DeleteApplyFile(c *gin.Context, userID primitive.ObjectID) response.Response {
+	// 删除数据库中的文件记录
+	_ = model.DeleteFileRecordByUserIDAndType(userID, model.Apply)
 	path := conf.SystemConfig.File.Upload.Apply.Path
 	// 删除文件
 	dir, _ := os.Open(path)
@@ -228,8 +230,6 @@ func (service *FileService) DeleteApplyFile(c *gin.Context, userID primitive.Obj
 			_ = os.Remove(filepath.Join(path, fileName))
 		}
 	}
-	// 删除数据库中的文件记录
-	_ = model.DeleteFileRecordByUserIDAndType(userID, model.Apply)
 	return response.BuildResponse(map[int]interface{}{})
 }
 
