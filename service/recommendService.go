@@ -60,7 +60,7 @@ func (service *RecommendService) RecommendGetSubmit(c *gin.Context, recommendGet
 			List:                  expertList,
 			SubmitID:              submitID,
 		},
-		File:                  fileName,
+		File: fileName,
 	}
 	return response.BuildResponse(map[int]interface{}{
 		response.Data: recommend,
@@ -114,7 +114,7 @@ func (service *RecommendService) RecommendSubmit(c *gin.Context, recommendVO *vo
 		Type:           model.Recommend,
 		UserID:         profile.Id,
 		SubmitID:       recommendVO.SubmitID,
-		Name: 			recommendVO.RecommendDepartmentVO.Name,
+		Name:           recommendVO.RecommendDepartmentVO.Name,
 		CommonRecordVO: vo.CommonRecordVO{Title: recommendVO.RecommendDepartmentVO.Name + "的推荐", Status: model.ReviewingText, Timestamp: time.Now().Unix()},
 	}
 	err = model.SaveOrUpdateRecommendRecordInfo(record)
@@ -143,21 +143,21 @@ func (service *RecommendService) RecommendUpload(c *gin.Context, recommendUpload
 	res := service.fileService.UploadRecommendFile(c, recommendUploadVO.SubmitID, profile.Id)
 	return res
 	/*
-	if res.Code != e.Success {
-		return res
-	}
-	// 解析docx文档
-	path := res.Data.(string)
-	tables, err := docx.Parse(path)
-	if err != nil {
+		if res.Code != e.Success {
+			return res
+		}
+		// 解析docx文档
+		path := res.Data.(string)
+		tables, err := docx.Parse(path)
+		if err != nil {
+			return response.BuildResponse(map[int]interface{}{
+				response.Code: e.ErrorRecommendParse,
+			})
+		}
+		expertList := ConstructExpertList(&tables[1])
 		return response.BuildResponse(map[int]interface{}{
-			response.Code: e.ErrorRecommendParse,
+			response.Data: expertList,
 		})
-	}
-	expertList := ConstructExpertList(&tables[1])
-	return response.BuildResponse(map[int]interface{}{
-		response.Data: expertList,
-	})
 	*/
 }
 

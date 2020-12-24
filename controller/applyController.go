@@ -65,7 +65,6 @@ func (controller *ApplyController) ApplyCreate(c *gin.Context) {
 }
 */
 
-
 // 提交基本信息
 func (controller *ApplyController) ApplySubmitBase(c *gin.Context) {
 	var applyBaseVO vo.ApplyBaseVO

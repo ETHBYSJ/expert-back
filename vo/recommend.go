@@ -33,7 +33,7 @@ type RecommendVO struct {
 // 用于返回给前端
 type RecommendRetVO struct {
 	RecommendVO
-	File 	string 	`json:"file"`
+	File string `json:"file"`
 }
 
 // 解析后的结果

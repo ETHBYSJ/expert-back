@@ -329,7 +329,7 @@ func (service *ApplyService) ApplySubmitOpinion(c *gin.Context, applyOpinionVO *
 		Type:           model.Apply,
 		UserID:         profile.Id,
 		SubmitID:       "",
-		Name: 			applyBase.Name,
+		Name:           applyBase.Name,
 		CommonRecordVO: vo.CommonRecordVO{Title: applyBase.Name + "的专家申请", Status: model.ReviewingText, Timestamp: time.Now().Unix()},
 	}
 	err = model.SaveOrUpdateApplyRecordInfo(record)

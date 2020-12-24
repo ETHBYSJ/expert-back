@@ -9,11 +9,9 @@ import (
 )
 
 type InvertedIndex struct {
-	Label 	string					`bson:"label"`
-	List 	[]primitive.ObjectID	`bson:"list"`
+	Label string               `bson:"label"`
+	List  []primitive.ObjectID `bson:"list"`
 }
-
-
 
 // 合并用户id
 func mergeUserID(list []primitive.ObjectID, userID primitive.ObjectID) []primitive.ObjectID {
@@ -202,14 +200,14 @@ func GetValidExpertsByLabels(labels []string) ([]*ApplyExpert, error) {
 			continue
 		}
 		/*
-		// 检查审核状态
-		records, err := GetApplyRecordsByUserID(id)
-		if err != nil {
-			continue
-		}
-		if records[0].Status == "accepted" {
-			experts = append(experts, expert)
-		}
+			// 检查审核状态
+			records, err := GetApplyRecordsByUserID(id)
+			if err != nil {
+				continue
+			}
+			if records[0].Status == "accepted" {
+				experts = append(experts, expert)
+			}
 		*/
 		experts = append(experts, expert)
 	}

@@ -15,31 +15,31 @@ const (
 )
 
 const (
-	AcceptedText = "accept"
+	AcceptedText  = "accept"
 	ReviewingText = "reviewing"
-	FailedText = "failed"
+	FailedText    = "failed"
 )
 
 const (
-	Accepted = 1
+	Accepted  = 1
 	Reviewing = 2
-	Failed = 3
+	Failed    = 3
 )
 
-var StatusMap = map[int]string {
-	Accepted: AcceptedText,
+var StatusMap = map[int]string{
+	Accepted:  AcceptedText,
 	Reviewing: ReviewingText,
-	Failed: FailedText,
+	Failed:    FailedText,
 }
 
 var errInvalidStatus = errors.New("无效的审核状态")
 
 // 专家推荐记录/专家申请记录
 type Record struct {
-	Type              int                `json:"-" bson:"type"`				// 记录类型
-	UserID            primitive.ObjectID `json:"-" bson:"userID"`			// 用户id
-	SubmitID          string             `json:"submitID" bson:"submitID"`	// 提交id
-	Name    		  string             `json:"-" bson:"name"`				// 代表单位名(专家推荐表)或人名(专家申请表)
+	Type              int                `json:"-" bson:"type"`            // 记录类型
+	UserID            primitive.ObjectID `json:"-" bson:"userID"`          // 用户id
+	SubmitID          string             `json:"submitID" bson:"submitID"` // 提交id
+	Name              string             `json:"-" bson:"name"`            // 代表单位名(专家推荐表)或人名(专家申请表)
 	vo.CommonRecordVO `bson:"commonRecord"`
 }
 

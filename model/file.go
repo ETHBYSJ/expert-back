@@ -8,17 +8,17 @@ import (
 )
 
 const (
-	ApplyFile = 1		// 专家申请上传文件
-	ApplyPhoto = 2		// 专家申请上传照片
-	RecommendFile = 3 	// 专家推荐上传文件
+	ApplyFile     = 1 // 专家申请上传文件
+	ApplyPhoto    = 2 // 专家申请上传照片
+	RecommendFile = 3 // 专家推荐上传文件
 )
 
 // 上传文件相关
 type FileRecord struct {
-	Type 		int 				`bson:"type"`
-	UserID 		primitive.ObjectID	`bson:"userID"`
-	SubmitID    string             	`bson:"submitID"`
-	Name 		string 				`bson:"name"`		// 文件名或图片url
+	Type     int                `bson:"type"`
+	UserID   primitive.ObjectID `bson:"userID"`
+	SubmitID string             `bson:"submitID"`
+	Name     string             `bson:"name"` // 文件名或图片url
 }
 
 // 根据用户id获得文件记录
@@ -44,8 +44,6 @@ func GetFileRecordBySubmitID(submitID string) (*FileRecord, error) {
 	}
 	return &fileRecord, nil
 }
-
-
 
 // 根据提交id更新文件记录
 func SaveOrUpdateFileRecordBySubmitID(fileRecord *FileRecord) error {
@@ -95,7 +93,6 @@ func DeleteFileRecordBySubmitID(submitID string) error {
 	return nil
 }
 
-
 // 根据用户id和文件类型删除文件记录
 func DeleteFileRecordByUserIDAndType(userID primitive.ObjectID, fileType int) error {
 	filter := bson.D{{"userID", userID}, {"type", fileType}}
@@ -105,4 +102,3 @@ func DeleteFileRecordByUserIDAndType(userID primitive.ObjectID, fileType int) er
 	}
 	return nil
 }
-

@@ -8,11 +8,11 @@ type CommonRecordVO struct {
 }
 
 type ReviewRecommendVO struct {
-	SubmitID	string 	`form:"submitID"`
-	Status 		int 	`form:"status"`
+	SubmitID string `form:"submitID"`
+	Status   int    `form:"status"`
 }
 
 type ReviewApplyVO struct {
-	UserID 		string 	`form:"userID"`
-	Status 		int 	`form:"status"`
+	UserID string `form:"userID"`
+	Status int    `form:"status"`
 }

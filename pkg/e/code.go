@@ -10,26 +10,26 @@ const (
 	ErrorDownload = 20001
 	ErrorUpload   = 20002
 	// 具体错误码：专家推荐
-	ErrorRecommend           = 30001
-	ErrorRecommendParse      = 30002
-	ErrorRecommendGetExperts = 30003
-	ErrorRecommendRecordsGet = 30004
-	ErrorRecommendSubmitGet  = 30005
-	ErrorRecommendRecordSet = 30006
+	ErrorRecommend              = 30001
+	ErrorRecommendParse         = 30002
+	ErrorRecommendGetExperts    = 30003
+	ErrorRecommendRecordsGet    = 30004
+	ErrorRecommendSubmitGet     = 30005
+	ErrorRecommendRecordSet     = 30006
 	ErrorRecommendFileRecordSet = 30007
 	ErrorRecommendFileRecordGet = 30008
 	// 具体错误码：专家申请
-	ErrorApplyCreate     = 40001
-	ErrorApplyUpdate     = 40002
-	ErrorApplyRecordsGet = 40003
-	ErrorApplyGet = 40004
-	ErrorApplyRecordSet = 40005
-	ErrorApplyFileRecordSet = 40006
-	ErrorApplyFileRecordGet = 40007
+	ErrorApplyCreate            = 40001
+	ErrorApplyUpdate            = 40002
+	ErrorApplyRecordsGet        = 40003
+	ErrorApplyGet               = 40004
+	ErrorApplyRecordSet         = 40005
+	ErrorApplyFileRecordSet     = 40006
+	ErrorApplyFileRecordGet     = 40007
 	ErrorApplySaveInvertedIndex = 40008
 	// 具体错误码：搜索
 	ErrorSearch = 50001
 	// 其他错误码
 	ErrorGetAccountProfile = 60001
-	ErrorReview = 60002
+	ErrorReview            = 60002
 )

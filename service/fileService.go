@@ -105,8 +105,6 @@ func (service *FileService) UploadApplyFile(c *gin.Context, userID primitive.Obj
 	})
 }
 
-
-
 // 上传推荐表
 func (service *FileService) UploadRecommendFile(c *gin.Context, submitID string, userID primitive.ObjectID) response.Response {
 	file, err := c.FormFile("file")
@@ -232,4 +230,3 @@ func (service *FileService) DeleteApplyFile(c *gin.Context, userID primitive.Obj
 	}
 	return response.BuildResponse(map[int]interface{}{})
 }
-

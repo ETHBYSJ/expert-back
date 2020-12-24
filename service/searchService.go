@@ -10,7 +10,6 @@ import (
 )
 
 type SearchService struct {
-
 }
 
 // 搜索专家信息，暂不考虑排序
@@ -34,7 +33,7 @@ func (service *SearchService) SearchExperts(c *gin.Context, searchVO *vo.SearchV
 			Labels: append(expert.ResearchLabels, expert.MajorLabels...),
 			Name:   expert.Name,
 			Photo:  expert.Photo,
-			Intro: 	expert.Dept + expert.AdminPost,
+			Intro:  expert.Dept + expert.AdminPost,
 		}
 		res = append(res, result)
 	}

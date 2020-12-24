@@ -9,12 +9,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-
-
 type CommonService struct {
-
 }
-
 
 // 审核专家推荐
 func (service *CommonService) ReviewReCommend(c *gin.Context, reviewRecommendVO *vo.ReviewRecommendVO) response.Response {

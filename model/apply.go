@@ -10,12 +10,12 @@ import (
 
 // 专家申请
 type ApplyExpert struct {
-	vo.ApplyBaseVO          `json:"applyBase" bson:"applyBase"`          			// 基本信息
-	vo.ApplyMajorVO         `json:"applyMajor" bson:"applyMajor"`         			// 专业类别
-	vo.ApplyResearchFieldVO `json:"applyResearchField" bson:"applyResearchField"` 	// 专攻领域
-	vo.ApplyResumeVO        `json:"applyResume" bson:"applyResume"`        			// 个人履历
-	vo.ApplyOpinionVO       `json:"applyOpinion" bson:"applyOpinion"`       		// 意见评价
-	UserID                  primitive.ObjectID          `json:"-" bson:"userID"` 	// 用户id
+	vo.ApplyBaseVO          `json:"applyBase" bson:"applyBase"`                   // 基本信息
+	vo.ApplyMajorVO         `json:"applyMajor" bson:"applyMajor"`                 // 专业类别
+	vo.ApplyResearchFieldVO `json:"applyResearchField" bson:"applyResearchField"` // 专攻领域
+	vo.ApplyResumeVO        `json:"applyResume" bson:"applyResume"`               // 个人履历
+	vo.ApplyOpinionVO       `json:"applyOpinion" bson:"applyOpinion"`             // 意见评价
+	UserID                  primitive.ObjectID                                    `json:"-" bson:"userID"` // 用户id
 }
 
 // 根据专家名获得申请信息
@@ -33,14 +33,14 @@ func GetValidExpertsByName(name string) ([]*ApplyExpert, error) {
 			return experts, err
 		}
 		/*
-		records, err := GetApplyRecordsByUserID(expert.UserID)
-		if err != nil {
-			continue
-		}
-		// 检查审核状态
-		if records[0].Status == "accepted" {
-			experts = append(experts, &expert)
-		}
+			records, err := GetApplyRecordsByUserID(expert.UserID)
+			if err != nil {
+				continue
+			}
+			// 检查审核状态
+			if records[0].Status == "accepted" {
+				experts = append(experts, &expert)
+			}
 		*/
 		experts = append(experts, &expert)
 	}
@@ -70,7 +70,7 @@ func CreateApply(userID primitive.ObjectID) error {
 			ResearchLabels: []string{},
 		}
 		apply = &ApplyExpert{
-			UserID: userID,
+			UserID:               userID,
 			ApplyResearchFieldVO: applyResearchFieldVO,
 		}
 		// 新建
@@ -94,7 +94,6 @@ func saveApplyInfo(userID primitive.ObjectID, key string, value interface{}) err
 	}
 	return nil
 }
-
 
 // 保存基本信息
 func SaveApplyBase(userID primitive.ObjectID, applyBaseVO *vo.ApplyBaseVO) error {
